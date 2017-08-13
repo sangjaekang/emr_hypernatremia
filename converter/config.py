@@ -9,8 +9,8 @@ DELIM = ','
 
 # 3. related to TEMP_FILE path
 
-
 KCD_PATH = '../data/KCD.xlsx'
 KCD_OUTPUT_PATH = '../data/KCD_mapping_df.csv'
 
 PER_LAB_DIR      = '../data/per_lab/'
+LAB_OUTPUT_PATH = '../data/labtest_mapping_df.csv'
