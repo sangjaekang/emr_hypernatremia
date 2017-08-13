@@ -7,7 +7,7 @@ import os
 import argparse
 from config import *
 
-def get_prescribe_map():
+def get_diagnosis_map():
     KCD_df = pd.read_csv(KCD_OUTPUT_PATH)
     KCD_to_code = pd.Series(KCD_df.mapping_code.values,index=KCD_df.KCD_code.values).to_dict()
 
@@ -46,12 +46,12 @@ def convert_date(date_type):
         return _convert_to_month
 
 
-def run(prescribe_data_path,date_type):
-    chunks = pd.read_csv(prescribe_data_path, delimiter = DELIM, 
+def run(diagnosis_data_path,date_type):
+    chunks = pd.read_csv(diagnosis_data_path, delimiter = DELIM, 
                 header=None, names=COL_NAME, usecols=USE_COLS, chunksize=CHUNK_SIZE)
     # USE_COLS = ['no','KCD_code','date']
     
-    KCD_to_code = get_prescribe_map() # mapping dictionary
+    KCD_to_code = get_diagnosis_map() # mapping dictionary
 
     for idx, chunk in enumerate(chunks):
         #### mapping
@@ -59,13 +59,13 @@ def run(prescribe_data_path,date_type):
         chunk.date = chunk.date.map(convert_date(date_type))
         
         if idx is 0:
-            chunk.to_csv(PRESCRIBE_OUTPUT_PATH, sep=DELIM, header=USE_COLS,index=False)
+            chunk.to_csv(DIAGNOSIS_OUTPUT_PATH, sep=DELIM, header=USE_COLS,index=False)
         else:
-            chunk.to_csv(PRESCRIBE_OUTPUT_PATH, sep=DELIM, header=False,index=False,mode='a')
+            chunk.to_csv(DIAGNOSIS_OUTPUT_PATH, sep=DELIM, header=False,index=False,mode='a')
 
 
 def count():
-    chunks = pd.read_csv(PRESCRIBE_OUTPUT_PATH, delimiter = DELIM, chunksize=CHUNK_SIZE)
+    chunks = pd.read_csv(DIAGNOSIS_OUTPUT_PATH, delimiter = DELIM, chunksize=CHUNK_SIZE)
 
     result = pd.concat([pd.value_counts(chunk.KCD_code.values,sort=False) for chunk in chunks])
     result = result.groupby(result.index).sum()
@@ -88,7 +88,7 @@ def drop_useless_data():
     KCD_mapping_df.to_csv(KCD_OUTPUT_PATH,sep=DELIM)
     del KCD_mapping_df
 
-    chunks = pd.read_csv(PRESCRIBE_OUTPUT_PATH,delimiter=DELIM,chunksize=CHUNK_SIZE)
+    chunks = pd.read_csv(DIAGNOSIS_OUTPUT_PATH,delimiter=DELIM,chunksize=CHUNK_SIZE)
     for idx, chunk in enumerate(chunks):
         temp = chunk[chunk.KCD_code.isin(use_df.mapping_code.values)]
         if idx is 0:
@@ -96,17 +96,16 @@ def drop_useless_data():
         else:
             temp.to_csv(TEMP_PATH, sep=DELIM, header=False,index=False,mode='a')
 
+    if os.path.isfile(DIAGNOSIS_OUTPUT_PATH):
+        os.remove(DIAGNOSIS_OUTPUT_PATH)
 
-    if os.path.isfile(PRESCRIBE_OUTPUT_PATH):
-        os.remove(PRESCRIBE_OUTPUT_PATH)
-
-    os.rename(TEMP_PATH,PRESCRIBE_OUTPUT_PATH)
+    os.rename(TEMP_PATH,DIAGNOSIS_OUTPUT_PATH)
 
 
 def set_parser():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-i",help="prescribe data path")
+    parser.add_argument("-i",help="diagnosis data path")
     parser.add_argument("-d",help="the type of date : {0 : month, 1: quarter}")
 
     args = parser.parse_args()
@@ -115,6 +114,6 @@ def set_parser():
 
 
 if __name__=='__main__':
-    args = set_parser() # param을 받아들임
+    args = set_parser()
     
     run(args.i,args.d)    
