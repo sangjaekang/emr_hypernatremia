@@ -9,11 +9,11 @@ USE_COLS = ['no','KCD_code','date']
 
 PATIENT_NUM = 5400000 # the number of patients
 DELIM = ',' # dataÀÇ delimiter / sep ¿¡ ÇØ´çÇÏ´Â »ó¼ö
-
+DROP_RATE = 10000 # the rate value to determine whether code is drop or not
 
 # 3. related to TEMP_FILE path
 
 KCD_OUTPUT_PATH = '../data/KCD_mapping_df.csv'
 PRESCRIBE_OUTPUT_PATH = '../data/pre_prescribe_df.csv'
 KCD_COUNTS_PATH = '../data/KCD_count_df.csv'
-
+TEMP_PATH = '../data/TEMP.csv'

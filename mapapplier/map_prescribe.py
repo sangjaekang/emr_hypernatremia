@@ -65,15 +65,42 @@ def run(prescribe_data_path,date_type):
 
 
 def count():
-    chunks = pd.read_csv(PRESCRIBE_OUTPUT_PATH, delimiter = DELIM, 
-                header=None, names=USE_COLS, chunksize=CHUNK_SIZE)
+    chunks = pd.read_csv(PRESCRIBE_OUTPUT_PATH, delimiter = DELIM, chunksize=CHUNK_SIZE)
 
-    result = pd.concat([chunk.KCD_code.apply(pd.Series.value_counts) for chunk in chunks])
+    result = pd.concat([pd.value_counts(chunk.KCD_code.values,sort=False) for chunk in chunks])
     result = result.groupby(result.index).sum()
 
-    result.to_csv(KCD_COUNTS_PATH, sep=DELIM, index=False)
+    result.to_csv(KCD_COUNTS_PATH, sep=DELIM, index=True)
 
-    print(result)
+
+def drop_useless_data():
+    KCD_count_df = pd.read_csv(KCD_COUNTS_PATH,names=['mapping_code','count'], delimiter=DELIM)
+    KCD_mapping_df = pd.read_csv(KCD_OUTPUT_PATH,delimiter=DELIM)
+
+    int_to_code = pd.Series(KCD_mapping_df.class_code.unique(),index = KCD_mapping_df.mapping_code.unique()).to_dict()
+
+    KCD_count_df['KCD_code'] = KCD_count_df['mapping_code'].map(int_to_code)
+
+    cutoff_count = KCD_count_df['count'].sum() // DROP_RATE
+    use_df  = KCD_count_df[KCD_count_df['count']>=cutoff_count]
+
+    KCD_mapping_df = KCD_mapping_df[KCD_mapping_df.mapping_code.isin(use_df.mapping_code)]
+    KCD_mapping_df.to_csv(KCD_OUTPUT_PATH,sep=DELIM)
+    del KCD_mapping_df
+
+    chunks = pd.read_csv(PRESCRIBE_OUTPUT_PATH,delimiter=DELIM,chunksize=CHUNK_SIZE)
+    for idx, chunk in enumerate(chunks):
+        temp = chunk[chunk.KCD_code.isin(use_df.mapping_code.values)]
+        if idx is 0:
+            temp.to_csv(TEMP_PATH, sep=DELIM, index=False)
+        else:
+            temp.to_csv(TEMP_PATH, sep=DELIM, header=False,index=False,mode='a')
+
+
+    if os.path.isfile(PRESCRIBE_OUTPUT_PATH):
+        os.remove(PRESCRIBE_OUTPUT_PATH)
+
+    os.rename(TEMP_PATH,PRESCRIBE_OUTPUT_PATH)
 
 
 def set_parser():
