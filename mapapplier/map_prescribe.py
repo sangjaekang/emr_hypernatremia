@@ -9,7 +9,7 @@ from config import *
 
 def get_prescribe_map():
     KCD_df = pd.read_csv(KCD_OUTPUT_PATH)
-    KCD_to_code = pd.Series(a.mapping_code.values,index=a.KCD_code.values).to_dict()
+    KCD_to_code = pd.Series(KCD_df.mapping_code.values,index=KCD_df.KCD_code.values).to_dict()
 
     del KCD_df
 
