@@ -1,6 +1,6 @@
 # 1. related to computer spec 
 
-CHUNK_SIZE = 10000000
+CHUNK_SIZE = 50000000
 DELIM = ','
 COL_NAME = ['no','KCD_code','context','context_check','date']
 USE_COLS = ['no','KCD_code','date']
@@ -15,5 +15,5 @@ DELIM = ',' # dataÀÇ delimiter / sep ¿¡ ÇØ´çÇÏ´Â »ó¼ö
 
 KCD_OUTPUT_PATH = '../data/KCD_mapping_df.csv'
 PRESCRIBE_OUTPUT_PATH = '../data/pre_prescribe_df.csv'
-
+KCD_COUNTS_PATH = '../data/KCD_count_df.csv'
 

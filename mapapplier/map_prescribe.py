@@ -64,6 +64,18 @@ def run(prescribe_data_path,date_type):
             chunk.to_csv(PRESCRIBE_OUTPUT_PATH, sep=DELIM, header=False,index=False,mode='a')
 
 
+def count():
+    chunks = pd.read_csv(PRESCRIBE_OUTPUT_PATH, delimiter = DELIM, 
+                header=None, names=USE_COLS, chunksize=CHUNK_SIZE)
+
+    result = pd.concat([chunk.KCD_code.apply(pd.Series.value_counts) for chunk in chunks])
+    result = result.groupby(result.index).sum()
+
+    result.to_csv(KCD_COUNTS_PATH, sep=DELIM, index=False)
+
+    print(result)
+
+
 def set_parser():
     parser = argparse.ArgumentParser()
 
