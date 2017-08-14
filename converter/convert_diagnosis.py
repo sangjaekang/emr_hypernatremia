@@ -1,12 +1,5 @@
 #-*- encoding :utf-8 -*-
-
-import pandas as pd
-import numpy as np
-import re
-import sys
-import os
 from config import *
-import argparse
 
 def set_col_type(col_type):
     

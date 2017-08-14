@@ -1,3 +1,10 @@
+import pandas as pd
+import numpy as np
+import re
+import sys
+import os
+import argparse
+
 # 1. related to computer spec 
 
 CHUNK_SIZE = 10000000
@@ -14,3 +21,7 @@ KCD_OUTPUT_PATH = '../data/KCD_mapping_df.csv'
 
 PER_LAB_DIR      = '../data/per_lab/'
 LAB_OUTPUT_PATH = '../data/labtest_mapping_df.csv'
+
+# 4. related to DEBUG
+
+DEBUG_PRINT = True

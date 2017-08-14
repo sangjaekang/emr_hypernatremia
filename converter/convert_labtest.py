@@ -1,16 +1,9 @@
 #-*- encoding :utf-8 -*-
-import pandas as pd
-import numpy as np
-import re
-import sys
-import os
 from config import *
-import argparse
-
 
 def check_df_size(lab_test_path):
     # 우리가 읽을 dataframe의 사이즈를 체크
-    global  CHUNK_SIZE
+    global  CHUNK_SIZE,DELIM
 
     if lab_test_path is None:
         raise ValueError("no lab test data path")
@@ -37,7 +30,7 @@ def revise_std(x):
 
 def revise_min(x):
     # 3시그마 바깥 값과 quanter 값의 사이값으로 결정
-    std_min = revise_mean(x)-revise_std(x)*3 # 3 시그마 바깥 값
+    std_min = revise_avg(x)-revise_std(x)*3 # 3 시그마 바깥 값
     q_min = x.quantile(0.01)
     if std_min<0 :
         # 측정값중에서 음수가 없기 때문에, 음수인 경우는 고려안함
@@ -47,7 +40,7 @@ def revise_min(x):
 
 def revise_max(x):
     # 3시그마 바깥 값과 quanter 값의 사이값으로 결정
-    std_max = revise_mean(x)+revise_std(x)*3
+    std_max = revise_avg(x)+revise_std(x)*3
     q_max = x.quantile(0.99)
     return np.mean((std_max,q_max))
 
@@ -97,15 +90,18 @@ def divide_per_test(lab_test_path):
                                                 header=None,names=COL_NAME ,chunksize=CHUNK_SIZE)
 
     for idx, chunk in enumerate(chunks):
-        print("{} - start".format(idx))
         for lab_name in chunk.lab_code.unique():
             temp_save_df= chunk[chunk.lab_code.isin([lab_name])]
             save_path = PER_LAB_DIR + 'labtest_{}.csv'.format(lab_name)
+
             if os.path.isfile(save_path):
                 # 파일이 존재한다면
                 temp_save_df[['no','date','result']].to_csv(save_path,sep=DELIM, header=False, index=False, mode='a')
             else : 
                 temp_save_df[['no','date','result']].to_csv(save_path,sep=DELIM, index=False)
+
+            if DEBUG_PRINT:
+                print('{}th {} completed'.format(idx,lab_name))
 
 
 def get_mapping_table():
@@ -144,13 +140,13 @@ def get_mapping_table():
                 r_max = revise_max(per_lab_df.result)
                 # 3. save
                 f.write(pattern_df.format(per_lab_name, r_avg, r_min, r_max))
-
+                
+                if DEBUG_PRINT:
+                    print("write {} completed".format(per_lab_name))
 
 def _set_parser():
     parser = argparse.ArgumentParser()
-
     parser.add_argument('-i', help="lab_test path")
-
     args = parser.parse_args()
 
     return args
