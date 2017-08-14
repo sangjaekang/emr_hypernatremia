@@ -70,7 +70,7 @@ def change_number(x):
 
 
 def divide_per_test(lab_test_path):    
-    global DELIM, COL_NAME, CHUNK_SIZE, PER_LAB_DIR
+    global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR
 
     # syntax checking for directory
     if not (PER_LAB_DIR[-1] is '/'):
@@ -87,7 +87,7 @@ def divide_per_test(lab_test_path):
             os.remove(PER_LAB_DIR + file)
 
     chunks = pd.read_csv(lab_test_path, delimiter=DELIM, 
-                                                header=None,names=COL_NAME ,chunksize=CHUNK_SIZE)
+                                                header=None,names=LAB_COL_NAME ,chunksize=CHUNK_SIZE)
 
     for idx, chunk in enumerate(chunks):
         for lab_name in chunk.lab_code.unique():
@@ -105,7 +105,7 @@ def divide_per_test(lab_test_path):
 
 
 def get_mapping_table():
-    global DELIM, COL_NAME, CHUNK_SIZE, PER_LAB_DIR, LAB_OUTPUT_PATH
+    global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR, LAB_OUTPUT_PATH
     
     # if exists, remove output file
     if os.path.isfile(LAB_OUTPUT_PATH):

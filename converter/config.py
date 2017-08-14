@@ -11,7 +11,7 @@ CHUNK_SIZE = 10000000
 
 # 2. related to data spec
 
-COL_NAME = ['no','lab_code','date','result']
+LAB_COL_NAME = ['no','lab_code','date','result']
 DELIM = ','
 
 MEDI_COL_NAME = ['약품코드', '약품명', '시작일자', '종료일자', '성분명', 'ATC분류코드', 'ATC분류설명']
