@@ -19,6 +19,9 @@ DROP_RATE = 10000 # the rate value to determine whether code is drop or not
 
 LAB_COL_NAME = ['no','lab_code','date','result']
 
+PRESCRIBE_COL_NAME = ['환자번호', '약품코드', '약품명' , '검사일자' , '처방일자 ' , 
+'ATC분류코드' ,   'ATC분류설명' ,   'ASHP분류코드' ,   'ASHP분류설명' ,   '복지부분류코드' ,   
+'복지부분류설명' ,   '총용량' ,   '투여량' ,   '횟수' ,   '일수']
 
 # 3. related to TEMP_FILE path
 
@@ -28,6 +31,9 @@ KCD_COUNTS_PATH = '../data/KCD_count_df.csv'
 
 LABMAP_OUTPUT_PATH = '../data/labtest_mapping_df.csv'
 LABTEST_OUTPUT_PATH = '../data/pre_labtest_df.csv'
+
+MEDICINE_OUTPUT_PATH = '../data/medicine_mapping_df.csv'
+PRESCRIBE_OUTPUT_PATH = '../data/pre_prescribe_df.csv'
 
 # 4. related to DEBUG
 
