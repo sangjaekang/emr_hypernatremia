@@ -48,7 +48,7 @@ def count():
 
 
 def drop_useless_data():
-    global KCD_COUNTS_PATH, DELIM, CHUNK_SIZE
+    global KCD_COUNTS_PATH, DELIM, CHUNK_SIZE, DROP_RATE
     
     KCD_count_df = pd.read_csv(KCD_COUNTS_PATH,names=['mapping_code','count'], delimiter=DELIM)
     KCD_mapping_df = pd.read_csv(KCD_OUTPUT_PATH,delimiter=DELIM)

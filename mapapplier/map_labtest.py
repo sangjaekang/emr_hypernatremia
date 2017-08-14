@@ -10,7 +10,8 @@ def normalize_number(avg_x,min_x,max_x,x):
     re_upper = re.compile('^>[\d\s]*[.]{0,1}[\d\s]*$')
     re_star = re.compile('^[\s]*[*][\s]*$')
     if re_num.match(str_x):
-        return float(str_x)
+        float_x = float(str_x)
+        return (float_x-min_x)/(max_x-min_x)
     else:
         if re_lower.match(str_x):
             return 0
@@ -19,12 +20,12 @@ def normalize_number(avg_x,min_x,max_x,x):
         elif re_star.match(str_x):
             return (avg_x-min_x)/(max_x-min_x)
         else:
-            return (x-min_x)/(max_x-min_x)
+            return np.nan
 
 
 def get_labtest_value(df,labtest_name):
-    _temp = df[df.labtest.isin([labtest_name])].to_dict()
-    return _temp['avg'][0], _temp['min'][0], _temp['max'][0] 
+    _temp = df[df.labtest.isin([labtest_name])]
+    return _temp.avg.values[0], _temp.min.values[0], _temp.max.values[0]
 
 
 def get_labtest_map():
@@ -46,13 +47,13 @@ def run(labtest_data_path,date_type):
 
     labtest_mapping_df = get_labtest_map()
 
-    re_p = re.compile('^.*,.*,.*,.*\n$')
+    re_p = re.compile('^[^,\n]*,[^,\n]*,[^,\n]*,[^,\n]*\n$')
     output_pattern = '{},{},{},{}\n'
 
     with open(labtest_data_path,'r') as inputfile:
         with open(LABTEST_OUTPUT_PATH,'w') as outputfile:
             
-            f.write(output_pattern.format('no','lab_code','date','result'))
+            outputfile.write(output_pattern.format('no','lab_code','date','result'))
             
             for idx, input_line in enumerate(inputfile.readlines()):
                 if re_p.match(input_line):
@@ -64,11 +65,11 @@ def run(labtest_data_path,date_type):
 
                     output_str = output_pattern.format(no, lab_code, revised_date, revised_result)
                     
-                    f.write(output_str)
+                    outputfile.write(output_str)
 
                     if DEBUG_PRINT and (idx % 1000000 == 0) :
                         print('---{}th line start---'.format(idx))
-                        
+
                 else : 
                     
                     if DEBUG_PRINT:
