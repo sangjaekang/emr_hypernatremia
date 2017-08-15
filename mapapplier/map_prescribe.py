@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
 from config import *
-from map_common import convert_month
+from map_common import convert_month, check_directory
 
 
 def get_prescribe_map():

@@ -2,6 +2,18 @@
 from config import *
 
 
+def check_directory(directory_path):
+    # syntax checking for directory
+    if not (directory_path[-1] is '/'):
+        directory_path  = directory_path + '/'
+
+    # not exists in directory
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+    
+    return directory_path        
+
+
 def strip_space(x):
     # 띄어쓰기 날려버리는 함수
     if isinstance(x,str):
@@ -53,7 +65,10 @@ def convert_date(date_type):
 
 
 re_date = re.compile('^\d{8}$') 
+
 def convert_to_month(x):
+    global re_date
+    
     str_x = str(x)
     if re_date.match(str_x):
         return int(str_x[2:6])

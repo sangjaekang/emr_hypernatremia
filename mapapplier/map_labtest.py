@@ -1,26 +1,32 @@
 #-*- encoding :utf-8 -*-
 from config import *
-from map_common import convert_month
+from map_common import convert_month, check_directory
 
-def normalize_number(avg_x,min_x,max_x,x):
-    str_x = str(x).strip()
+def normalize_number(mean_x,min_x,max_x):
+    '''
+    dataframe 내 이상값을 전처리하는 함수.
+    dataframe.map 을 이용할 것이므로, 함수 in 함수 구조 사용
+    '''
+    def _normalize_number(x):
+        str_x = str(x).strip()
 
-    re_num = re.compile('^[+-]?[\d]+[.]?[\d]*$')
-    re_lower = re.compile('^<[\d\s]*[.]{0,1}[\d\s]*$')
-    re_upper = re.compile('^>[\d\s]*[.]{0,1}[\d\s]*$')
-    re_star = re.compile('^[\s]*[*][\s]*$')
-    if re_num.match(str_x):
-        float_x = float(str_x)
-        return (float_x-min_x)/(max_x-min_x)
-    else:
-        if re_lower.match(str_x):
-            return 0
-        elif re_upper.match(str_x):
-            return 1
-        elif re_star.match(str_x):
-            return (avg_x-min_x)/(max_x-min_x)
+        re_num = re.compile('^[+-]?[\d]+[.]?[\d]*$')
+        re_lower = re.compile('^<[\d\s]*[.]{0,1}[\d\s]*$')
+        re_upper = re.compile('^>[\d\s]*[.]{0,1}[\d\s]*$')
+        re_star = re.compile('^[\s]*[*][\s]*$')
+        if re_num.match(str_x):
+            return np.float(str_x)
         else:
-            return np.nan
+            if re_lower.match(str_x):
+                return np.float(0)
+            elif re_upper.match(str_x):
+                return  np.float(1)
+            elif re_star.match(str_x):
+                return np.float( (mean_x-min_x)/(max_x-min_x) )
+            else:
+                return np.nan
+
+    return _normalize_number
 
 
 def get_labtest_value(df,labtest_name):
@@ -40,42 +46,39 @@ def get_labtest_map():
 
 
 def run(labtest_data_path):
-    global LABTEST_OUTPUT_PATH, DEBUG_PRINT
+    global PER_LAB_DIR, PREP_OUTPUT_DIR, LAB_COL_NAME, USE_LAB_COL_NAME, LABTEST_OUTPUT_PATH, DEBUG_PRINT
 
-    if os.path.isfile(LABTEST_OUTPUT_PATH):
-        os.remove(LABTEST_OUTPUT_PATH)
+    # syntax checking existence for directory
+    PER_LAB_DIR = check_directory(PER_LAB_DIR)
+    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
 
+    output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
+
+    # if the previous output file exists, remove it
+    if os.path.isfile(output_path):    
+        os.remove(output_path)
+    # get mapping dataframe and save to hdf5 file 
     labtest_mapping_df = get_labtest_map()
+    labtest_mapping_df = labtest_mapping_df.apply(pd.to_numeric,errors='ignore')
+    per_lab_df.to_hdf(output_path, "map_df", format='table',date_columns=True, mode='a')
 
-    re_p = re.compile('^[^,\n]*,[^,\n]*,[^,\n]*,[^,\n]*\n$')
-    output_pattern = '{},{},{},{}\n'
+    re_per_lab = re.compile("^labtest_.*\.csv")     
+    for file in os.path.listdir(PER_LAB_DIR):
+        if re_per_lab.match(file):
+            per_lab_name = file.replace('labtest_','').replace('.csv','')
+            per_lab_path = PER_LAB_DIR + file
+            per_lab_df = pd.read_csv(per_lab_path, delimiter = DELIM,
+                                    names=LAB_COL_NAME, usecols=USE_LAB_COL_NAME)
+            # 1. 값　가져오기
+            r_avg, r_min, r_max = get_labtest_value(labtest_mapping_df, per_lab_name)
+            per_lab_df.labtest =  per_lab_df.labtest.map(normalize_number(r_avg,r_min_r_max))
+            per_lab_df.date = per_lab_df.date.map(convert_month) 
+            # file type change
+            per_lab_df = per_lab_df.apply(pd.to_numeric,errors='ignore')            
+            per_lab_df.to_hdf(output_path, per_lab_name, format='table', date_columns=True, mode='a')
 
-    with open(labtest_data_path,'r') as inputfile:
-        with open(LABTEST_OUTPUT_PATH,'w') as outputfile:
-            
-            outputfile.write(output_pattern.format('no','lab_code','date','result'))
-            
-            for idx, input_line in enumerate(inputfile.readlines()):
-                if re_p.match(input_line):
-                    no, lab_code, date, result = input_line.strip().split(',')
-                    
-                    r_avg, r_min, r_max = get_labtest_value(labtest_mapping_df,lab_code)    
-                    revised_result = normalize_number(r_avg,r_min,r_max,result)
-                    revised_date = convert_month(date)
-
-                    output_str = output_pattern.format(no, lab_code, revised_date, revised_result)
-                    
-                    outputfile.write(output_str)
-
-                    if DEBUG_PRINT and (idx % 1000000 == 0) :
-                        print('---{}th line start---'.format(idx))
-
-                else : 
-                    
-                    if DEBUG_PRINT:
-                        print("EXCEPTION CASE in labtest_data  ---> {}".format(input_line))
-                    
-                    pass
+            if DEBUG_PRINT:
+                print("{} dataframe enters hdf5 file".format(per_lab_name))
 
 
 def set_parser():
