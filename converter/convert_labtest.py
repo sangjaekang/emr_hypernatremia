@@ -84,12 +84,12 @@ def divide_per_test(lab_test_path):
 
 
 def get_mapping_table():
-    global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR, LAB_OUTPUT_PATH
+    global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR, LAB_MAPPING_PATH
     
     check_directory(MAPPING_DIR)
     check_directory(PER_LAB_DIR)
     
-    output_path = MAPPING_DIR + LAB_OUTPUT_PATH
+    output_path = MAPPING_DIR + LAB_MAPPING_PATH
 
     # if exists, remove output file
     if os.path.isfile(output_path):
@@ -130,3 +130,4 @@ if __name__=='__main__':
     args = _set_parser()
 
     divide_per_test(args.i)
+    get_mapping_table()

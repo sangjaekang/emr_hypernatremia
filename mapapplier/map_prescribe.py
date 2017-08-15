@@ -2,7 +2,6 @@
 from config import *
 from map_common import convert_month, check_directory
 
-
 def get_prescribe_map():
     global MEDICINE_OUTPUT_PATH
 
@@ -24,7 +23,10 @@ def check_not_date_type(x):
 
 
 def run(prescribe_lab_path):
-    global DELIM, CHUNK_SIZE, PRESCRIBE_OUTPUT_PATH
+    global DELIM, CHUNK_SIZE, PRESCRIBE_OUTPUT_PATH, PREP_OUTPUT_DIR
+    
+    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
+    prescribe_output_path = PREP_OUTPUT_DIR + PRESCRIBE_OUTPUT_PATH
     
     mapping_dict = get_prescribe_map()
 
@@ -37,9 +39,9 @@ def run(prescribe_lab_path):
         chunk['medi_code'] = chunk['medi_code'].map(mapping_dict)
         chunk['date']           = chunk['date'].map(convert_month)
         if idx is 0:
-            chunk.to_csv(PRESCRIBE_OUTPUT_PATH, sep=DELIM, index=False)
+            chunk.to_csv(prescribe_output_path, sep=DELIM, index=False)
         else : 
-            chunk.to_csv(PRESCRIBE_OUTPUT_PATH, sep=DELIM, index=False, header=False, mode='a')
+            chunk.to_csv(prescribe_output_path, sep=DELIM, index=False, header=False, mode='a')
         
 
 def set_parser():

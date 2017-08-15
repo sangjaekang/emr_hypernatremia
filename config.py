@@ -1,20 +1,51 @@
-#-*-encoding:utf-8-*-
-'''
-¿¬»ê Ã³¸®¿¡ ÀÌ¿ëµÇ´Â ÁÖ¿ä constantsµéÀ» ÀúÀåÇÏ´Â ÆÄÀÏ
-'''
+import pandas as pd
+import numpy as np
+import re
+import sys
+import os
+import argparse
 
+#-*-encoding:utf-8-*-
 # 1. related to computer spec 
 
-NUM_CORES = 4 # multi-processing ½Ã »ç¿ëÇÒ cpu core ¼ö
+CHUNK_SIZE = 50000000
+NUM_CORES = 4 # multi-processing
 
 # 2. related to data spec 
 
-PATIENT_NUM = 5400000 # the number of patients
-DELIM = ',' # dataÀÇ delimiter / sep ¿¡ ÇØ´çÇÏ´Â »ó¼ö
+DELIM = ',' 
+
+KCD_COL_NAME = ['no','KCD_code','context','context_check','date']
+KCD_USE_COLS = ['no','KCD_code','date']
+
+LAB_COL_NAME = ['no','lab_code','date','result']
+USE_LAB_COL_NAME = ['no','date','result']
+MAP_LAB_COL_NAME = ['labtest','AVG','MIN','MAX']
+
+MEDI_COL_NAME = ['ì•½í’ˆì½”ë“œ', 'ì•½í’ˆëª…', 'ì‹œì‘ì¼ì', 'ì¢…ë£Œì¼ì', 'ì„±ë¶„ëª…', 'ATCë¶„ë¥˜ì½”ë“œ', 'ATCë¶„ë¥˜ì„¤ëª…']
+
 
 # 3. related to TEMP_FILE path
+
+# data directory
+PREP_OUTPUT_DIR = '../data/prep/'
+MAPPING_DIR = '../data/map_table/'
+PER_LAB_DIR      = '../data/per_lab/'
+
+# convert mapping input data path
+KCD_PATH = '../data/KCD.xlsx'
+MEDICINE_CONTEXT_PATH = '../data/medicine_context.xlsx'
+
+# mapping dataframe path 
+KCD_MAPPING_PATH = 'KCD_mapping_df.csv'
+LAB_MAPPING_PATH = 'labtest_mapping_df.csv'
+MEDICINE_MAPPING_PATH = 'medicine_mapping_df.csv'
+
+# preprocess_data_path
+LABTEST_OUTPUT_PATH = 'pre_labtest_df.h5'
+PRESCRIBE_OUTPUT_PATH = 'pre_prescribe_df.csv'
+DIAGNOSIS_OUTPUT_PATH = 'pre_diagnosis_df.csv'
 
 # 4. related to DEBUG
 
 DEBUG_PRINT = True
-

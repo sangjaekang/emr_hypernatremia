@@ -139,10 +139,10 @@ def remove_surplus_expr(df):
     return df
 
 def get_mapping_table():
-    global MAPPING_DIR, MEDICINE_CONTEXT_PATH, MEDICINE_OUTPUT_PATH, DELIM
+    global MAPPING_DIR, MEDICINE_CONTEXT_PATH, MEDICINE_MAPPING_PATH, DELIM
     MAPPING_DIR = check_directory(MAPPING_DIR)
 
-    output_path = MAPPING_DIR + MEDICINE_OUTPUT_PATH
+    output_path = MAPPING_DIR + MEDICINE_MAPPING_PATH
 
     medicine_context_df = pd.read_excel(MEDICINE_CONTEXT_PATH)
 

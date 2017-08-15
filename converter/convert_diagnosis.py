@@ -26,10 +26,10 @@ def preprocess_middle_class(df):
 
 
 def get_mapping_table(df,col_type):
-    global MAPPING_DIR, KCD_OUTPUT_PATH, DEBUG_PRINT
+    global MAPPING_DIR, KCD_MAPPING_PATH, DEBUG_PRINT
 
     MAPPING_DIR = check_directory(MAPPING_DIR)
-    output_path = MAPPING_DIR + KCD_OUTPUT_PATH
+    output_path = MAPPING_DIR + KCD_MAPPING_PATH
 
     code_to_class = pd.Series(df[col_type].values, index=df['진단용어코드'])
     class_to_int = pd.Series(range(1,len(df[col_type].unique())+1),index=df[col_type].unique())
