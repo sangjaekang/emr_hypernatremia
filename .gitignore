@@ -9,3 +9,8 @@ __pycache__/
 #PyInsaller
 *.manifest
 *.spec
+
+#data
+*.csv
+*.dat
+*.txt
