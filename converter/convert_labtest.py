@@ -1,20 +1,6 @@
 #-*- encoding :utf-8 -*-
 from config import *
-
-def check_df_size(lab_test_path):
-    # 우리가 읽을 dataframe의 사이즈를 체크
-    global  CHUNK_SIZE,DELIM
-
-    if lab_test_path is None:
-        raise ValueError("no lab test data path")
-
-    f = open(lab_test_path,mode='r',encoding="utf-8")
-    col_num = f.readline().count(DELIM)+1
-    row_num = sum(1 for _ in f)
-
-    print("dataframe의 (row,col) : ({},{}) ".
-            format(row_num,col_num))    
-
+from convert_common import check_directory
 
 def revise_avg(x):
     # 10~90% 내에 있는 값을 이용해서 평균 계산
@@ -57,13 +43,11 @@ def change_number(x):
     else:
         if re_comma.match(str_x):
             return change_number(str_x.replace(',',""))
-
         elif re_range.match(str_x):
             if "~" in str_x:
                 a,b = str_x.split("~")
             else:
                 a,b = str_x.split("-")
-
             return np.mean((change_number(a),change_number(b)))
         else :
             return np.nan
@@ -72,13 +56,8 @@ def change_number(x):
 def divide_per_test(lab_test_path):    
     global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR, USE_LAB_COL_NAME
 
-    # syntax checking for directory
-    if not (PER_LAB_DIR[-1] is '/'):
-        PER_LAB_DIR  = PER_LAB_DIR + '/'
+    check_directory(PER_LAB_DIR)
 
-    # not exists in directory
-    if not os.path.exists(PER_LAB_DIR):
-        os.makedirs(PER_LAB_DIR)
 
     # remove temp file in per_lab_directory
     re_per_lab = re.compile("^labtest_.*\.csv") 
@@ -107,29 +86,24 @@ def divide_per_test(lab_test_path):
 def get_mapping_table():
     global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR, LAB_OUTPUT_PATH
     
+    check_directory(MAPPING_DIR)
+    check_directory(PER_LAB_DIR)
+    
+    output_path = MAPPING_DIR + LAB_OUTPUT_PATH
+
     # if exists, remove output file
-    if os.path.isfile(LAB_OUTPUT_PATH):
-        os.remove(LAB_OUTPUT_PATH)
-
-    # syntax checking for directory
-    if not (PER_LAB_DIR[-1] is '/'):
-        PER_LAB_DIR  = PER_LAB_DIR + '/'
-
-    # not exists in directory
-    if not os.path.exists(PER_LAB_DIR):
-        os.makedirs(PER_LAB_DIR)
+    if os.path.isfile(output_path):
+        os.remove(output_path)
 
     # get temp file in per_lab_directory
     re_per_lab = re.compile("^labtest_.*\.csv") 
-    
     pattern_df = '{},{},{},{}\n'
-    with open(LAB_OUTPUT_PATH,'w') as f :        
+    with open(output_path,'w') as f :        
         f.write(pattern_df.format(*MAP_LAB_COL_NAME))
         for  file in os.listdir(PER_LAB_DIR):
             if re_per_lab.match(file):
                 per_lab_name = file.replace('labtest_','').replace('.csv','')
                 per_lab_path = PER_LAB_DIR + file
-
                 per_lab_df = pd.read_csv(per_lab_path,delimiter=DELIM)
 
                 # 1. 숫자로　치환하기

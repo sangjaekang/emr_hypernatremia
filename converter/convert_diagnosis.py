@@ -1,5 +1,6 @@
 #-*- encoding :utf-8 -*-
 from config import *
+from convert_common import check_directory
 
 def set_col_type(col_type):
     
@@ -25,6 +26,11 @@ def preprocess_middle_class(df):
 
 
 def get_mapping_table(df,col_type):
+    global MAPPING_DIR, KCD_OUTPUT_PATH, DEBUG_PRINT
+
+    MAPPING_DIR = check_directory(MAPPING_DIR)
+    output_path = MAPPING_DIR + KCD_OUTPUT_PATH
+
     code_to_class = pd.Series(df[col_type].values, index=df['진단용어코드'])
     class_to_int = pd.Series(range(1,len(df[col_type].unique())+1),index=df[col_type].unique())
     
@@ -33,13 +39,15 @@ def get_mapping_table(df,col_type):
 
     mapping_df.index.name = 'KCD_code'
     mapping_df.columns = ['class_code','mapping_code']
-
-    mapping_df.to_csv(KCD_OUTPUT_PATH,sep=DELIM)
-
+    
+    if DEBUG_PRINT:
+        print(mapping_df.head())
+    mapping_df.to_csv(output_path,sep=DELIM)
     del mapping_df
 
 
 def run(col_type):
+    global KCD_PATH
     '''
     input parameter
         col_type 
@@ -53,21 +61,15 @@ def run(col_type):
         raise ValueError("WRONG KCD_PATH")
         
     KCD_df = pd.read_excel(KCD_PATH)    
-
     KCD_df = preprocess_middle_class(KCD_df)
-
     get_mapping_table(KCD_df,col_type)
 
     del KCD_df
 
 def _set_parser():
-    global SKIP
     parser = argparse.ArgumentParser()
-
     parser.add_argument('-t', help="select col_type (0 : 대분류명, 1 : 중분류명, 2 : 소분류명")
-
     args = parser.parse_args()
-
     return args
 
 

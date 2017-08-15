@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
 from config import *
-
+from convert_common import check_directory
 
 def strip_space(x):
     # 띄어쓰기 날려버리는 함수
@@ -139,8 +139,11 @@ def remove_surplus_expr(df):
     return df
 
 def get_mapping_table():
-    global MEDICINE_CONTEXT_PATH, MEDICINE_OUTPUT_PATH, DELIM
-    
+    global MAPPING_DIR, MEDICINE_CONTEXT_PATH, MEDICINE_OUTPUT_PATH, DELIM
+    MAPPING_DIR = check_directory(MAPPING_DIR)
+
+    output_path = MAPPING_DIR + MEDICINE_OUTPUT_PATH
+
     medicine_context_df = pd.read_excel(MEDICINE_CONTEXT_PATH)
 
     medicine_context_df.drop(medicine_context_df.columns[[1, 2, 3, 5, 6]], axis=1,inplace=True)
@@ -174,7 +177,7 @@ def get_mapping_table():
 
     mapping_df.drop_duplicates(inplace=True)
 
-    mapping_df.to_csv(MEDICINE_OUTPUT_PATH ,sep=DELIM)
+    mapping_df.to_csv(output_path ,sep=DELIM)
 
 if __name__ == '__main__':
     get_mapping_table()
