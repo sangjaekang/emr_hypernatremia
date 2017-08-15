@@ -66,7 +66,7 @@ def convert_date(date_type):
 
 re_date = re.compile('^\d{8}$') 
 
-def convert_to_month(x):
+def convert_month(x):
     global re_date
     
     str_x = str(x)
