@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
 from config import *
-from map_common import convert_date, strip_space
+from map_common import convert_month, strip_space
 
 
 def get_diagnosis_map():
@@ -16,20 +16,18 @@ def get_diagnosis_map():
     return KCD_to_code
 
 
-def run(diagnosis_data_path,date_type):
+def run(diagnosis_data_path):
     global DELIM, KCD_COL_NAME, KCD_USE_COLS, CHUNK_SIZE, DIAGNOSIS_OUTPUT_PATH
     chunks = pd.read_csv(diagnosis_data_path, delimiter = DELIM, 
                 header=None, names=KCD_COL_NAME, usecols=KCD_USE_COLS, chunksize=CHUNK_SIZE)
-    # KCD_USE_COLS = ['no','KCD_code','date']
     
     KCD_to_code = get_diagnosis_map() # mapping dictionary
 
     for idx, chunk in enumerate(chunks):
         #### mapping
-
         chunk.KCD_code = chunk.KCD_code.map(strip_space)
         chunk.KCD_code = chunk.KCD_code.map(KCD_to_code)
-        chunk.date = chunk.date.map(convert_date(date_type))
+        chunk.date = chunk.date.map(convert_month)
         
         if idx is 0:
             chunk.to_csv(DIAGNOSIS_OUTPUT_PATH, sep=DELIM, header=KCD_USE_COLS,index=False)
@@ -80,10 +78,7 @@ def drop_useless_data():
 
 def set_parser():
     parser = argparse.ArgumentParser()
-
     parser.add_argument("-i",help="diagnosis data path")
-    parser.add_argument("-d",help="the type of date : {0 : month, 1: quarter}")
-
     args = parser.parse_args()
 
     return args
@@ -92,4 +87,4 @@ def set_parser():
 if __name__=='__main__':
     args = set_parser()
     
-    run(args.i,args.d)    
+    run(args.i)    

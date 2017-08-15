@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
 from config import *
-from map_common import convert_date
+from map_common import convert_month
 
 
 def get_prescribe_map():
@@ -23,7 +23,7 @@ def check_not_date_type(x):
     return not bool(re_date.match(str_x))
 
 
-def run(prescribe_lab_path,date_type):
+def run(prescribe_lab_path):
     global DELIM, CHUNK_SIZE, PRESCRIBE_OUTPUT_PATH
     
     mapping_dict = get_prescribe_map()
@@ -35,7 +35,7 @@ def run(prescribe_lab_path,date_type):
         chunk.drop(['medi_name','date1'],axis=1,inplace=True)
         #### 임시　코드  end###
         chunk['medi_code'] = chunk['medi_code'].map(mapping_dict)
-        chunk['date']           = chunk['date'].map(convert_date(date_type))
+        chunk['date']           = chunk['date'].map(convert_month)
         if idx is 0:
             chunk.to_csv(PRESCRIBE_OUTPUT_PATH, sep=DELIM, index=False)
         else : 
@@ -44,10 +44,7 @@ def run(prescribe_lab_path,date_type):
 
 def set_parser():
     parser = argparse.ArgumentParser()
-
     parser.add_argument("-i",help="prescribe data path")
-    parser.add_argument("-d",help="the type of date : {0 : month, 1: quarter}")
-
     args = parser.parse_args()
 
     return args
@@ -56,4 +53,4 @@ def set_parser():
 if __name__=='__main__':
     args = set_parser()
 
-    run(args.i,args.d)
+    run(args.i)

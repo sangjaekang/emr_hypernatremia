@@ -51,3 +51,11 @@ def convert_date(date_type):
     else : 
         return _convert_to_month
 
+
+re_date = re.compile('^\d{8}$') 
+def convert_to_month(x):
+    str_x = str(x)
+    if re_date.match(str_x):
+        return int(str_x[2:6])
+    else : 
+        raise ValueError("wrong number in date : {}".format(str_x))

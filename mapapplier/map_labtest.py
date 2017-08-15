@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
 from config import *
-from map_common import convert_date
+from map_common import convert_month
 
 def normalize_number(avg_x,min_x,max_x,x):
     str_x = str(x).strip()
@@ -39,7 +39,7 @@ def get_labtest_map():
     return labtest_mapping_df
 
 
-def run(labtest_data_path,date_type):
+def run(labtest_data_path):
     global LABTEST_OUTPUT_PATH, DEBUG_PRINT
 
     if os.path.isfile(LABTEST_OUTPUT_PATH):
@@ -61,7 +61,7 @@ def run(labtest_data_path,date_type):
                     
                     r_avg, r_min, r_max = get_labtest_value(labtest_mapping_df,lab_code)    
                     revised_result = normalize_number(r_avg,r_min,r_max,result)
-                    revised_date = convert_date(date_type)(date)
+                    revised_date = convert_month(date)
 
                     output_str = output_pattern.format(no, lab_code, revised_date, revised_result)
                     
@@ -80,10 +80,7 @@ def run(labtest_data_path,date_type):
 
 def set_parser():
     parser = argparse.ArgumentParser()
-
     parser.add_argument("-i",help="labtest data path")
-    parser.add_argument("-d",help="the type of date : {0 : month, 1: quarter}")
-
     args = parser.parse_args()
 
     return args
@@ -92,4 +89,4 @@ def set_parser():
 if __name__=='__main__':
     args = set_parser()
     
-    run(args.i,args.d)    
+    run(args.i)    
