@@ -43,8 +43,8 @@ MEDICINE_MAPPING_PATH = 'medicine_mapping_df.csv'
 
 ## preprocess_data_path
 LABTEST_OUTPUT_PATH = 'pre_labtest_df.h5'
-PRESCRIBE_OUTPUT_PATH = 'pre_prescribe_df.csv'
-DIAGNOSIS_OUTPUT_PATH = 'pre_diagnosis_df.csv'
+PRESCRIBE_OUTPUT_PATH = 'pre_prescribe_df.h5'
+DIAGNOSIS_OUTPUT_PATH = 'pre_diagnosis_df.h5'
 
 ## TEMP file path
 TEMP_PATH = 'temp_output.csv'
