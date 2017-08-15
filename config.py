@@ -27,24 +27,28 @@ MEDI_COL_NAME = ['약품코드', '약품명', '시작일자', '종료일자', '�
 
 # 3. related to TEMP_FILE path
 
-# data directory
+## data directory
 PREP_OUTPUT_DIR = '../data/prep/'
 MAPPING_DIR = '../data/map_table/'
 PER_LAB_DIR      = '../data/per_lab/'
 
-# convert mapping input data path
+## convert mapping input data path
 KCD_PATH = '../data/KCD.xlsx'
 MEDICINE_CONTEXT_PATH = '../data/medicine_context.xlsx'
 
-# mapping dataframe path 
+## mapping dataframe path 
 KCD_MAPPING_PATH = 'KCD_mapping_df.csv'
 LAB_MAPPING_PATH = 'labtest_mapping_df.csv'
 MEDICINE_MAPPING_PATH = 'medicine_mapping_df.csv'
 
-# preprocess_data_path
+## preprocess_data_path
 LABTEST_OUTPUT_PATH = 'pre_labtest_df.h5'
 PRESCRIBE_OUTPUT_PATH = 'pre_prescribe_df.csv'
 DIAGNOSIS_OUTPUT_PATH = 'pre_diagnosis_df.csv'
+
+## TEMP file path
+TEMP_PATH = 'temp_output.csv'
+
 
 # 4. related to DEBUG
 

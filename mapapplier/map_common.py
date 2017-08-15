@@ -65,7 +65,6 @@ def convert_date(date_type):
 
 
 re_date = re.compile('^\d{8}$') 
-
 def convert_month(x):
     global re_date
     
@@ -74,3 +73,9 @@ def convert_month(x):
         return int(str_x[2:6])
     else : 
         raise ValueError("wrong number in date : {}".format(str_x))
+
+
+def save_to_hdf5(input_path,output_path,key_name):
+    input_df = pd.read_csv(input_path,delimiter=DELIM)            
+    input_df.to_hdf(output_path,key_name,format='table',data_columns=True,mode='a')
+    del input_df
