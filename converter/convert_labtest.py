@@ -70,7 +70,7 @@ def change_number(x):
 
 
 def divide_per_test(lab_test_path):    
-    global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR
+    global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR, USE_LAB_COL_NAME
 
     # syntax checking for directory
     if not (PER_LAB_DIR[-1] is '/'):
@@ -96,9 +96,9 @@ def divide_per_test(lab_test_path):
 
             if os.path.isfile(save_path):
                 # 파일이 존재한다면
-                temp_save_df[['no','date','result']].to_csv(save_path,sep=DELIM, header=False, index=False, mode='a')
+                temp_save_df[USE_LAB_COL_NAME].to_csv(save_path,sep=DELIM, header=False, index=False, mode='a')
             else : 
-                temp_save_df[['no','date','result']].to_csv(save_path,sep=DELIM, index=False)
+                temp_save_df[USE_LAB_COL_NAME].to_csv(save_path,sep=DELIM, index=False)
 
             if DEBUG_PRINT:
                 print('{}th {} completed'.format(idx,lab_name))
@@ -124,7 +124,7 @@ def get_mapping_table():
     
     pattern_df = '{},{},{},{}\n'
     with open(LAB_OUTPUT_PATH,'w') as f :        
-        f.write(pattern_df.format('labtest','avg','min','max'))
+        f.write(pattern_df.format(*MAP_LAB_COL_NAME))
         for  file in os.listdir(PER_LAB_DIR):
             if re_per_lab.match(file):
                 per_lab_name = file.replace('labtest_','').replace('.csv','')

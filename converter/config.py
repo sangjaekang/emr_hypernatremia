@@ -12,9 +12,12 @@ CHUNK_SIZE = 10000000
 # 2. related to data spec
 
 LAB_COL_NAME = ['no','lab_code','date','result']
+USE_LAB_COL_NAME = ['no','date','result']
 DELIM = ','
 
 MEDI_COL_NAME = ['약품코드', '약품명', '시작일자', '종료일자', '성분명', 'ATC분류코드', 'ATC분류설명']
+
+MAP_LAB_COL_NAME = ['labtest','AVG','MIN','MAX']
 
 # 3. related to TEMP_FILE path
 
@@ -28,5 +31,4 @@ MEDICINE_CONTEXT_PATH = '../data/medicine_context.xlsx'
 MEDICINE_OUTPUT_PATH = '../data/medicine_mapping_df.csv'
 
 # 4. related to DEBUG
-
 DEBUG_PRINT = True

@@ -12,7 +12,6 @@ CHUNK_SIZE = 50000000
 
 # 2. related to data spec 
 
-PATIENT_NUM = 5400000 # the number of patients
 KCD_COL_NAME = ['no','KCD_code','context','context_check','date']
 KCD_USE_COLS = ['no','KCD_code','date']
 DELIM = ',' # dataÀÇ delimiter / sep ¿¡ ÇØ´çÇÏ´Â »ó¼ö
@@ -20,7 +19,7 @@ DROP_RATE = 10000 # the rate value to determine whether code is drop or not
 
 LAB_COL_NAME = ['no','lab_code','date','result']
 USE_LAB_COL_NAME = ['no','date','result']
-
+MAP_LAB_COL_NAME = ['labtest','AVG','MIN','MAX']
 
 PRESCRIBE_COL_NAME = ['환자번호', '약품코드', '약품명' , '검사일자' , '처방일자 ' , 
 'ATC분류코드' ,   'ATC분류설명' ,   'ASHP분류코드' ,   'ASHP분류설명' ,   '복지부분류코드' ,   
