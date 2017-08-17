@@ -39,6 +39,11 @@ def check_not_date_type(x):
     return not bool(re_date.match(str_x))
 
 
+def convert_times_per_month(x):
+    float_x = float(x)
+    return float_x // 30
+
+
 def run(prescribe_lab_path):
     global DELIM, CHUNK_SIZE, PRESCRIBE_OUTPUT_PATH, PREP_OUTPUT_DIR,TEMP_PATH
     
@@ -58,6 +63,7 @@ def run(prescribe_lab_path):
         #### 임시　코드  end###
         chunk['medi_code'] = chunk['medi_code'].map(mapping_dict)
         chunk['date']           = chunk['date'].map(convert_month)
+        chunk['times'] = chunk['times'].map(convert_times_per_month) 
         if idx is 0:
             chunk.to_csv(TEMP_PATH, sep=DELIM, index=False)
         else : 
