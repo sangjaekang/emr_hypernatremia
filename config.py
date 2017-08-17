@@ -15,6 +15,10 @@ NUM_CORES = 4 # multi-processing
 
 DELIM = ',' 
 
+## time period among data
+START_TIME = 20100101
+END_TIME  = 20161231
+
 ## KCD_code data column
 KCD_COL_NAME = ['no','KCD_code','context','context_check','date']
 KCD_USE_COLS = ['no','KCD_code','date']
@@ -31,6 +35,10 @@ MEDI_COL_NAME = ['약품코드', '약품명', '시작일자', '종료일자', '�
 DEMO_COL_NAME = ['no','sex','age']
 AGE_BREAK_POINTS = (-1,10,20,30,50,60,160)
 AGE_LABELS = ['~10','10~20','20~30','30~50','50~60','60~160']
+
+## offset for feature
+OFFSET_DIAGNOSIS_COUNTS = 1e-5
+DIAG_TIME_INTERVAL = 6
 
 # 3. related to TEMP_FILE path
 
