@@ -76,6 +76,9 @@ def convert_month(x):
 
 
 def save_to_hdf5(input_path,output_path,key_name):
+    if os.path.isfile(output_path):
+        os.remove(output_path)
+
     input_df = pd.read_csv(input_path,delimiter=DELIM)            
     input_df.to_hdf(output_path,key_name,format='table',data_columns=True,mode='a')
     del input_df

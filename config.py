@@ -24,6 +24,7 @@ MAP_LAB_COL_NAME = ['labtest','AVG','MIN','MAX']
 
 MEDI_COL_NAME = ['약품코드', '약품명', '시작일자', '종료일자', '성분명', 'ATC분류코드', 'ATC분류설명']
 
+DEMO_COL_NAME = ['no','sex','age']
 
 # 3. related to TEMP_FILE path
 
@@ -45,6 +46,7 @@ MEDICINE_MAPPING_PATH = 'medicine_mapping_df.csv'
 LABTEST_OUTPUT_PATH = 'pre_labtest_df.h5'
 PRESCRIBE_OUTPUT_PATH = 'pre_prescribe_df.h5'
 DIAGNOSIS_OUTPUT_PATH = 'pre_diagnosis_df.h5'
+DEMOGRAPHIC_OUTPUT_PATH = 'pre_demographic_df.h5'
 
 ## TEMP file path
 TEMP_PATH = 'temp_output.csv'
