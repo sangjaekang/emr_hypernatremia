@@ -1,7 +1,7 @@
 #-*- encoding :utf-8 -*-
 from config import *
 
-from map_common import check_directory, save_to_hdf5
+from construct_common import check_directory, save_to_hdf5
 
 def set_age_dummies():
     global PREP_OUTPUT_DIR, DEMOGRAPHIC_OUTPUT_PATH, AGE_BREAK_POINTS, AGE_LABELS
@@ -14,14 +14,15 @@ def set_age_dummies():
     demo_except_age = store_demo.select('data/original',columns=['no','sex'])
     demo_age = store_demo.select('data/original',columns=['age'])
 
-    cat_demo_age = pd.cut(demo_age, AGE_BREAK_POINTS, labels = AGE_LABELS)
+    cat_demo_age = pd.cut(demo_age.age, AGE_BREAK_POINTS, labels = AGE_LABELS)
     cat_demo_age = cat_demo_age.cat.add_categories(['not known'])
     cat_demo_age[cat_demo_age.isnull()] = 'not known'
-    cat_demo_age.columns = cat_demo_age.columns.categories
+    cat_demo_age = pd.get_dummies(cat_demo_age)
 
-    _df = pd.concat([demo_except_age, cat_demo_age],axies=1)
+    _df = pd.concat([demo_except_age, cat_demo_age],axis=1)
 
     _df.to_hdf(demographic_output_path,'data/dummy',format='table',data_columns=True,mode='a')
+    
 
 def get_demographic_series(no):
     global PREP_OUTPUT_DIR, DEMOGRAPHIC_OUTPUT_PATH
