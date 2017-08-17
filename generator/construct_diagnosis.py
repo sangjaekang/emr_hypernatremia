@@ -23,6 +23,12 @@ def set_diagnosis_row():
     use_index_df.to_hdf(diagnosis_output_path,'metadata/usecol',format='table',data_columns=True,mode='a')
 
 
+def get_index_name_map():
+    store_diag = pd.HDFStore(diagnosis_output_path)
+    class_map_df = store_diag.select('metadata/mapping_table',columns=['class_code','mapping_code']).drop_duplicates()
+    return class_map_df.set_index('mapping_code').to_dict()['class_code']
+
+
 def get_diagnosis_df(no):
     global PREP_OUTPUT_DIR, DIAGNOSIS_OUTPUT_PATH, KCD_USE_COLS, DIAG_TIME_INTERVAL
     PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
@@ -60,5 +66,7 @@ def get_diagnosis_df(no):
         _prev_value = value
 
     del target_df
+
+    index_name_dict = get_index_name_map(no)
+    result_df.index = result_df.index.map(index_name_dict.get)
     return result_df
-    
