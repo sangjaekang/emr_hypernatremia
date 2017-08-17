@@ -15,7 +15,7 @@ def normalize_number(mean_x,min_x,max_x):
         re_upper = re.compile('^>[\d\s]*[.]{0,1}[\d\s]*$')
         re_star = re.compile('^[\s]*[*][\s]*$')
         if re_num.match(str_x):
-            return np.float(str_x)
+            return (np.float(str_x) - min_x)/(max_x-min_x)
         else:
             if re_lower.match(str_x):
                 return np.float(0)
@@ -63,7 +63,7 @@ def run():
     # get mapping dataframe and save to hdf5 file 
     labtest_mapping_df = get_labtest_map()
     labtest_mapping_df = labtest_mapping_df.apply(pd.to_numeric,errors='ignore')
-    labtest_mapping_df.to_hdf(output_path, "metadata/mapping_table", format='table',date_columns=True, mode='a')
+    labtest_mapping_df.to_hdf(output_path, "metadata/mapping_table", format='table',dcate_columns=True, mode='a')
 
     re_per_lab = re.compile("^labtest_.*\.csv")     
     for file in os.listdir(PER_LAB_DIR):
