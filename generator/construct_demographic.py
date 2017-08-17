@@ -1,0 +1,38 @@
+#-*- encoding :utf-8 -*-
+from config import *
+
+from map_common import check_directory, save_to_hdf5
+
+def set_age_dummies():
+    global PREP_OUTPUT_DIR, DEMOGRAPHIC_OUTPUT_PATH, AGE_BREAK_POINTS, AGE_LABELS
+
+    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
+    demographic_output_path = PREP_OUTPUT_DIR + DEMOGRAPHIC_OUTPUT_PATH
+
+    store_demo = pd.HDFStore(demographic_output_path)
+
+    demo_except_age = store_demo.select('data/original',columns=['no','sex'])
+    demo_age = store_demo.select('data/original',columns=['age'])
+
+    cat_demo_age = pd.cut(demo_age, AGE_BREAK_POINTS, labels = AGE_LABELS)
+    cat_demo_age = cat_demo_age.cat.add_categories(['not known'])
+    cat_demo_age[cat_demo_age.isnull()] = 'not known'
+    cat_demo_age.columns = cat_demo_age.columns.categories
+
+    _df = pd.concat([demo_except_age, cat_demo_age],axies=1)
+
+    _df.to_hdf(demographic_output_path,'data/dummy',format='table',data_columns=True,mode='a')
+
+def get_demographic_series(no):
+    global PREP_OUTPUT_DIR, DEMOGRAPHIC_OUTPUT_PATH
+
+    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
+    demographic_output_path = PREP_OUTPUT_DIR + DEMOGRAPHIC_OUTPUT_PATH
+
+    store_demo = pd.HDFStore(demographic_output_path)
+
+    # if there is no dummy dataframe, set it
+    if not '/data/dummy' in store_demo.keys():
+        set_age_dummies()
+
+    return store_demo.select('/data/dummy',where='no=={}'.format(no)).squeeze()

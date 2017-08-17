@@ -15,16 +15,22 @@ NUM_CORES = 4 # multi-processing
 
 DELIM = ',' 
 
+## KCD_code data column
 KCD_COL_NAME = ['no','KCD_code','context','context_check','date']
 KCD_USE_COLS = ['no','KCD_code','date']
 
+## labatory data column
 LAB_COL_NAME = ['no','lab_code','date','result']
 USE_LAB_COL_NAME = ['no','date','result']
 MAP_LAB_COL_NAME = ['labtest','AVG','MIN','MAX']
 
+## current medicine data column
 MEDI_COL_NAME = ['약품코드', '약품명', '시작일자', '종료일자', '성분명', 'ATC분류코드', 'ATC분류설명']
 
+## data column, AGE BINS for demographic data
 DEMO_COL_NAME = ['no','sex','age']
+AGE_BREAK_POINTS = (-1,10,20,30,50,60,160)
+AGE_LABELS = ['~10','10~20','20~30','30~50','50~60','60~160']
 
 # 3. related to TEMP_FILE path
 
