@@ -1,6 +1,5 @@
 #-*- encoding :utf-8 -*-
 from config import *
-
 from construct_common import check_directory, save_to_hdf5
 
 def set_age_dummies():
@@ -22,7 +21,7 @@ def set_age_dummies():
     _df = pd.concat([demo_except_age, cat_demo_age],axis=1)
 
     _df.to_hdf(demographic_output_path,'data/dummy',format='table',data_columns=True,mode='a')
-    
+
 
 def get_demographic_series(no):
     global PREP_OUTPUT_DIR, DEMOGRAPHIC_OUTPUT_PATH
@@ -36,4 +35,4 @@ def get_demographic_series(no):
     if not '/data/dummy' in store_demo.keys():
         set_age_dummies()
 
-    return store_demo.select('/data/dummy',where='no=={}'.format(no)).squeeze()
+    return store_demo.select('/data/dummy',where='no=={}'.format(no)).squeeze().drop('no')
