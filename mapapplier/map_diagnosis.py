@@ -65,51 +65,6 @@ def run(diagnosis_data_path):
     os.remove(TEMP_PATH) # temp file remove
     save_mapping_to_hdf5()
 
-'''
-def count():
-    global DELIM, CHUNK_SIZE, DIAGNOSIS_OUTPUT_PATH, KCD_COUNTS_PATH, PREP_OUTPUT_DIR
-
-    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
-    diagnosis_output_path = PREP_OUTPUT_DIR + DIAGNOSIS_OUTPUT_PATH
-
-    chunks = pd.read_csv(diagnosis_output_path, delimiter = DELIM, chunksize=CHUNK_SIZE)
-
-    result = pd.concat([pd.value_counts(chunk.KCD_code.values,sort=False) for chunk in chunks])
-    result = result.groupby(result.index).sum()
-
-    result.to_csv(KCD_COUNTS_PATH, sep=DELIM, index=True)
-
-
-def drop_useless_data():
-    global KCD_COUNTS_PATH, DELIM, CHUNK_SIZE, DROP_RATE
-
-    KCD_count_df = pd.read_csv(KCD_COUNTS_PATH,names=['mapping_code','count'], delimiter=DELIM)
-    KCD_mapping_df = pd.read_csv(KCD_MAPPING_PATH,delimiter=DELIM)
-
-    int_to_code = pd.Series(KCD_mapping_df.class_code.unique(),index = KCD_mapping_df.mapping_code.unique()).to_dict()
-
-    KCD_count_df['KCD_code'] = KCD_count_df['mapping_code'].map(int_to_code)
-
-    cutoff_count = KCD_count_df['count'].sum() // DROP_RATE
-    use_df  = KCD_count_df[KCD_count_df['count']>=cutoff_count]
-
-    KCD_mapping_df = KCD_mapping_df[KCD_mapping_df.mapping_code.isin(use_df.mapping_code)]
-    KCD_mapping_df.to_csv(KCD_MAPPING_PATH,sep=DELIM)
-    del KCD_mapping_df
-
-    chunks = pd.read_csv(DIAGNOSIS_OUTPUT_PATH,delimiter=DELIM,chunksize=CHUNK_SIZE)
-    for idx, chunk in enumerate(chunks):
-        temp = chunk[chunk.KCD_code.isin(use_df.mapping_code.values)]
-        if idx is 0:
-            temp.to_csv(TEMP_PATH, sep=DELIM, index=False)
-        else:
-            temp.to_csv(TEMP_PATH, sep=DELIM, header=False,index=False,mode='a')
-
-    if os.path.isfile(DIAGNOSIS_OUTPUT_PATH):
-        os.remove(DIAGNOSIS_OUTPUT_PATH)
-
-    os.rename(TEMP_PATH,DIAGNOSIS_OUTPUT_PATH)
-'''
 
 def set_parser():
     parser = argparse.ArgumentParser()
