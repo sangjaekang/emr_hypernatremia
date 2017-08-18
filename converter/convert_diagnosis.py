@@ -2,26 +2,19 @@
 from .config import *
 from .convert_common import check_directory
 
-def set_col_type(col_type):
-    
-    if type(col_type) is str: 
+def set_col_type(col_type):    
+    if isinstance(col_type,str): 
         col_type = int(col_type)
     
-    if col_type is 0:
-        return "대분류명"
-    elif col_type is 1:
-        return '중분류명'
-    elif col_type is 2:
-        return '소분류명'
-    else :
-        return '중분류명'
+    return {0: "대분류명",
+                1: '중분류명',
+                2:  '소분류명'}.get(x,'중분류명')
 
 
 def preprocess_middle_class(df):
     df['중분류명'] = df['중분류명'].str.strip().replace('A92-A99',"A90-A99")
     df['중분류명'] = df['중분류명'].str.strip().replace('G10-G13',"G10-G14")    
-    df['중분류명'] = df['중분류명'].str.strip().replace('K55-K63',"K55-K63")
-
+    df['중분류명'] = df['중분류명'].str.strip().replace('K55-K63',"K55-K64")
     return df
 
 

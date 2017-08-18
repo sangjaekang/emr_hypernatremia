@@ -177,7 +177,12 @@ def get_mapping_table():
 
     mapping_df.drop_duplicates(inplace=True)
 
-    mapping_df.to_csv(output_path ,sep=DELIM)
+    mapping_df.to_csv(output_path ,sep=DELIM,index=False)
+    
+    if DEBUG_PRINT:
+        print(mapping_df.head())
+
+    del mapping_df
 
 if __name__ == '__main__':
     get_mapping_table()

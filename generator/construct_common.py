@@ -52,6 +52,7 @@ def get_timeseries_column():
 
     return col_list
 
+
 def get_time_interval(t_1,t_2):
     def _get_time(t):
         year = t//100; month = t%100

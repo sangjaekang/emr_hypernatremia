@@ -2,11 +2,14 @@
 from .config import *
 from .construct_common import check_directory, save_to_hdf5, get_timeseries_column, get_time_interval
 
+# output path setting
+global PREP_OUTPUT_DIR, PRESCRIBE_OUTPUT_PATH
+PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
+prescribe_output_path = PREP_OUTPUT_DIR + PRESCRIBE_OUTPUT_PATH
+
 
 def set_prescribe_row():
-    global OFFSET_PRESCRIBE_COUNTS, PREP_OUTPUT_DIR, PRESCRIBE_OUTPUT_PATH
-    PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
-    prescribe_output_path = PREP_OUTPUT_DIR + PRESCRIBE_OUTPUT_PATH
+    global OFFSET_PRESCRIBE_COUNTS, prescribe_output_path
 
     store_pres = pd.HDFStore(prescribe_output_path)
     if not '/data' in store_pres.keys():
@@ -21,12 +24,10 @@ def set_prescribe_row():
     use_index_df.columns = ['col','value_counts']
     store_pres.close()
     use_index_df.to_hdf(prescribe_output_path,'metadata/usecol',format='table',data_columns=True,mode='a')
-
+    del use_index_df
 
 def get_index_name_map():
-    global PREP_OUTPUT_DIR, PRESCRIBE_OUTPUT_PATH
-    PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
-    prescribe_output_path = PREP_OUTPUT_DIR + PRESCRIBE_OUTPUT_PATH
+    global prescribe_output_path
 
     store_pres = pd.HDFStore(prescribe_output_path)
     class_map_df=store_pres.select('metadata/mapping_table',columns=['ingd_name','mapping_code']).drop_duplicates()
@@ -34,9 +35,7 @@ def get_index_name_map():
 
 
 def get_prescribe_df(no):
-    global PREP_OUTPUT_DIR, PRESCRIBE_OUTPUT_PATH, MEDI_USE_COLS
-    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
-    prescribe_output_path = PREP_OUTPUT_DIR + PRESCRIBE_OUTPUT_PATH
+    global prescribe_output_path, MEDI_USE_COLS
     store_pres = pd.HDFStore(prescribe_output_path)
 
     if not '/metadata/usecol' in store_pres.keys():
@@ -48,10 +47,6 @@ def get_prescribe_df(no):
     result_df = pd.DataFrame(columns=col_list,index=use_prescribe_values)
     # target patient dataframe
     target_df = store_pres.select('data',where='no=={}'.format(no))
-
-    medi_code_i = MEDI_USE_COLS.index('medi_code')
-    date_i  = MEDI_USE_COLS.index('date')
-    times_i = MEDI_USE_COLS.index('times')
 
     for value in target_df.values:
         _ , _medi_code, _date, _times = value

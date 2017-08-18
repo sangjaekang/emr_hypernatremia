@@ -40,8 +40,7 @@ def check_not_date_type(x):
 
 
 def convert_times_per_month(x):
-    float_x = float(x)
-    return float_x // 30
+    return float(x) // 30
 
 
 def run(prescribe_lab_path):

@@ -8,6 +8,32 @@ LINE_COUNTS = 100000
 DELIM       = ','
 SKIP        = False
 
+def check_error_line(input_path): 
+    f = open(input_path,encoding='cp949')
+    first_line = f.readline()
+
+    delim_count = first_line.count(',')
+
+    count = 0
+    error_code_list = []
+
+    for line in f.readlines():
+        _count = line.count(',')
+        
+        if _count is not delim_count:
+            count = count +1
+            error_code_list.append(line.split(',')[1])
+        if count<10:
+            
+            print("error exists : " + line)
+    print("-----------------------------------")
+    print("total error line : {}".format(count))
+    print("-----------------------------------")
+    print("error code list : ")
+    for code in pd.Series(error_code_list).unique():
+        print(code)
+
+
 def _check_size(file_path):
     if file_path is None:
         raise ValueError('no file path')
@@ -18,6 +44,7 @@ def _check_size(file_path):
 
     print("dataframe의 (row,col) : ({},{})".
             format(row_num,col_num))
+
 
 def _set_parser():
     global SKIP

@@ -2,11 +2,13 @@
 from .config import *
 from .construct_common import check_directory, save_to_hdf5, get_timeseries_column, get_time_interval
 
+# output path setting
+global PREP_OUTPUT_DIR, DIAGNOSIS_OUTPUT_PATH
+PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
+diagnosis_output_path = PREP_OUTPUT_DIR + DIAGNOSIS_OUTPUT_PATH
 
 def set_diagnosis_row():
-    global OFFSET_DIAGNOSIS_COUNTS, PREP_OUTPUT_DIR, DIAGNOSIS_OUTPUT_PATH
-    PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
-    diagnosis_output_path = PREP_OUTPUT_DIR + DIAGNOSIS_OUTPUT_PATH
+    global OFFSET_DIAGNOSIS_COUNTS, diagnosis_output_path
 
     store_diag = pd.HDFStore(diagnosis_output_path)
     if not '/data' in store_diag.keys():
@@ -24,9 +26,7 @@ def set_diagnosis_row():
 
 
 def get_index_name_map():
-    global PREP_OUTPUT_DIR, DIAGNOSIS_OUTPUT_PATH
-    PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
-    diagnosis_output_path = PREP_OUTPUT_DIR + DIAGNOSIS_OUTPUT_PATH
+    global diagnosis_output_path 
 
     store_diag = pd.HDFStore(diagnosis_output_path)
     class_map_df = store_diag.select('metadata/mapping_table',columns=['class_code','mapping_code']).drop_duplicates()
@@ -34,9 +34,8 @@ def get_index_name_map():
 
 
 def get_diagnosis_df(no):
-    global PREP_OUTPUT_DIR, DIAGNOSIS_OUTPUT_PATH, KCD_USE_COLS, DIAG_TIME_INTERVAL
-    PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
-    diagnosis_output_path = PREP_OUTPUT_DIR + DIAGNOSIS_OUTPUT_PATH
+    global diagnosis_output_path, KCD_USE_COLS, DIAG_TIME_INTERVAL
+    
     store_diag = pd.HDFStore(diagnosis_output_path)
     
     if not '/metadata/usecol' in store_diag.keys():
@@ -66,7 +65,7 @@ def get_diagnosis_df(no):
                     end_index = result_df.columns.get_loc(curr_date)
                     result_df.loc[int(value[KCD_code_i])].iloc[start_index:end_index] = 1
 
-            result_df.loc[value[KCD_code_i]].loc[curr_date] = 1
+            result_df.loc[curr_code].loc[curr_date] = 1
         _prev_value = value
 
     del target_df

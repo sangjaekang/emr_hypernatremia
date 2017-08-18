@@ -2,8 +2,14 @@
 from .config import *
 from .construct_common import check_directory, save_to_hdf5, get_timeseries_column, get_time_interval
 
+# output path setting
+global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH
+PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
+labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
+
+
 def set_labtest_row():
-    global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH, OFFSET_LABTEST_COUNTS
+    global labtest_output_path, OFFSET_LABTEST_COUNTS
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
     store_lab = pd.HDFStore(labtest_output_path)
@@ -28,9 +34,7 @@ def set_labtest_row():
 
 
 def get_labtest_df(no): 
-    global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH
-    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR) 
-    labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
+    global labtest_output_path
     store_lab = pd.HDFStore(labtest_output_path)
     
     if not '/metadata/usecol' in store_lab.keys():

@@ -4,7 +4,7 @@ from .map_common import check_directory, save_to_hdf5
 
 
 def check_age(x):
-    if type(x) is not float:
+    if not isinstance(x,float):
         return np.nan
     elif x<0.0 : 
         return np.nan

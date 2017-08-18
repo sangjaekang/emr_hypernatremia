@@ -39,7 +39,6 @@ def run(diagnosis_data_path):
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     diagnosis_output_path = PREP_OUTPUT_DIR + DIAGNOSIS_OUTPUT_PATH
 
-    
     KCD_to_code = get_diagnosis_map() # mapping dictionary
 
     if os.path.isfile(TEMP_PATH):
