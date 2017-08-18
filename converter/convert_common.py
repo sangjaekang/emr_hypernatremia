@@ -1,5 +1,5 @@
 #-*- encoding :utf-8 -*-
-from config import *
+from .config import *
 
 
 def check_df_size(df_path):

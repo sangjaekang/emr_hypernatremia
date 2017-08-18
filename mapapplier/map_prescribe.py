@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
-from config import *
-from map_common import convert_month, check_directory, save_to_hdf5
+from .config import *
+from .map_common import convert_month, check_directory, save_to_hdf5
 
 def save_mapping_to_hdf5():
     global MAPPING_DIR, MEDICINE_MAPPING_PATH,PREP_OUTPUT_DIR,PRESCRIBE_OUTPUT_PATH

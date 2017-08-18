@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
-from config import *
-from convert_common import check_directory
+from .config import *
+from .convert_common import check_directory
 
 def revise_avg(x):
     # 10~90% 내에 있는 값을 이용해서 평균 계산

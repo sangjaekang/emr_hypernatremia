@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
-from config import *
-from construct_common import check_directory, save_to_hdf5
+from .config import *
+from .construct_common import check_directory, save_to_hdf5
 
 def set_age_dummies():
     global PREP_OUTPUT_DIR, DEMOGRAPHIC_OUTPUT_PATH, AGE_BREAK_POINTS, AGE_LABELS

@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
-from config import *
-from map_common import convert_month, check_directory
+from .config import *
+from .map_common import convert_month, check_directory
 
 def normalize_number(mean_x,min_x,max_x):
     '''

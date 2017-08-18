@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
-from config import *
-from map_common import check_directory, save_to_hdf5
+from .config import *
+from .map_common import check_directory, save_to_hdf5
 
 
 def check_age(x):

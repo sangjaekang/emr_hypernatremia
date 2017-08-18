@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
-from config import *
-from construct_common import check_directory, save_to_hdf5, get_timeseries_column, get_time_interval
+from .config import *
+from .construct_common import check_directory, save_to_hdf5, get_timeseries_column, get_time_interval
 
 def set_labtest_row():
     global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH, OFFSET_LABTEST_COUNTS

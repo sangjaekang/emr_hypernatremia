@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
-from config import *
-from convert_common import check_directory
+from .config import *
+from .convert_common import check_directory
 
 def strip_space(x):
     # 띄어쓰기 날려버리는 함수
