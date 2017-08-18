@@ -1,6 +1,11 @@
 #-*- encoding :utf-8 -*-
-from .config import *
-from .construct_common import check_directory, save_to_hdf5, get_timeseries_column, get_time_interval
+import sys, os, re
+# 상위 폴더의 config를 import하기 위한 경로 설정
+os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
+BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
+sys.path.append(BASE_PATH)
+from generator.config import *
+from generator.construct_common import check_directory, save_to_hdf5, get_timeseries_column, get_time_interval
 
 # output path setting
 global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH

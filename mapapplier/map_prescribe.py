@@ -1,6 +1,11 @@
 #-*- encoding :utf-8 -*-
-from .config import *
-from .map_common import convert_month, check_directory, save_to_hdf5
+import sys, os, re
+# 상위 폴더의 config를 import하기 위한 경로 설정
+os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
+BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
+sys.path.append(BASE_PATH)
+from mapapplier.config import *
+from mapapplier.map_common import convert_month, check_directory, save_to_hdf5
 
 def save_mapping_to_hdf5():
     global MAPPING_DIR, MEDICINE_MAPPING_PATH,PREP_OUTPUT_DIR,PRESCRIBE_OUTPUT_PATH
