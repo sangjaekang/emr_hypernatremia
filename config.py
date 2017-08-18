@@ -1,3 +1,4 @@
+#-*-encoding:utf-8-*-
 import pandas as pd
 import numpy as np
 import re
@@ -5,7 +6,6 @@ import sys
 import os
 import argparse
 
-#-*-encoding:utf-8-*-
 # 1. related to computer spec 
 
 CHUNK_SIZE = 50000000
@@ -51,13 +51,14 @@ find_path = re.compile('emr_hypernatremia')
 BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
 
 ## data directory
+DATA_DIR  = BASE_PATH + '/data/'
 PREP_OUTPUT_DIR  = BASE_PATH + '/data/prep/'
 MAPPING_DIR      = BASE_PATH + '/data/map_table/'
 PER_LAB_DIR      = BASE_PATH + '/data/per_lab/'
 
 ## convert mapping input data path
-KCD_PATH = BASE_PATH + '/data/KCD.xlsx'
-MEDICINE_CONTEXT_PATH = BASE_PATH + '/data/medicine_context.xlsx'
+KCD_PATH = DATA_DIR + 'KCD.xlsx'
+MEDICINE_CONTEXT_PATH = DATA_DIR + 'medicine_context.xlsx'
 
 ## mapping dataframe path 
 KCD_MAPPING_PATH = 'KCD_mapping_df.csv'
