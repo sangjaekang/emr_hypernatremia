@@ -46,14 +46,18 @@ DIAG_TIME_INTERVAL = 6
 
 # 3. related to TEMP_FILE path
 
+os_path = os.path.abspath('./')
+find_path = re.compile('emr_hypernatremia')
+BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
+
 ## data directory
-PREP_OUTPUT_DIR = '../data/prep/'
-MAPPING_DIR = '../data/map_table/'
-PER_LAB_DIR      = '../data/per_lab/'
+PREP_OUTPUT_DIR  = BASE_PATH + '/data/prep/'
+MAPPING_DIR      = BASE_PATH + '/data/map_table/'
+PER_LAB_DIR      = BASE_PATH + '/data/per_lab/'
 
 ## convert mapping input data path
-KCD_PATH = '../data/KCD.xlsx'
-MEDICINE_CONTEXT_PATH = '../data/medicine_context.xlsx'
+KCD_PATH = BASE_PATH + '/data/KCD.xlsx'
+MEDICINE_CONTEXT_PATH = BASE_PATH + '/data/medicine_context.xlsx'
 
 ## mapping dataframe path 
 KCD_MAPPING_PATH = 'KCD_mapping_df.csv'

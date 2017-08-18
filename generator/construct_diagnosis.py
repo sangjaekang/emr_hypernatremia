@@ -24,6 +24,10 @@ def set_diagnosis_row():
 
 
 def get_index_name_map():
+    global PREP_OUTPUT_DIR, DIAGNOSIS_OUTPUT_PATH
+    PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
+    diagnosis_output_path = PREP_OUTPUT_DIR + DIAGNOSIS_OUTPUT_PATH
+
     store_diag = pd.HDFStore(diagnosis_output_path)
     class_map_df = store_diag.select('metadata/mapping_table',columns=['class_code','mapping_code']).drop_duplicates()
     return class_map_df.set_index('mapping_code').to_dict()['class_code']
@@ -67,6 +71,6 @@ def get_diagnosis_df(no):
 
     del target_df
 
-    index_name_dict = get_index_name_map(no)
+    index_name_dict = get_index_name_map()
     result_df.index = result_df.index.map(index_name_dict.get)
     return result_df

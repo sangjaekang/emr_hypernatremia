@@ -24,6 +24,10 @@ def set_prescribe_row():
 
 
 def get_index_name_map():
+    global PREP_OUTPUT_DIR, PRESCRIBE_OUTPUT_PATH
+    PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)    
+    prescribe_output_path = PREP_OUTPUT_DIR + PRESCRIBE_OUTPUT_PATH
+
     store_pres = pd.HDFStore(prescribe_output_path)
     class_map_df=store_pres.select('metadata/mapping_table',columns=['ingd_name','mapping_code']).drop_duplicates()
     return class_map_df.set_index('mapping_code').to_dict()['ingd_name']
