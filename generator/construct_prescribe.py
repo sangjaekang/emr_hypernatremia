@@ -9,7 +9,7 @@ def set_prescribe_row():
     prescribe_output_path = PREP_OUTPUT_DIR + PRESCRIBE_OUTPUT_PATH
 
     store_pres = pd.HDFStore(prescribe_output_path)
-    if not '/data' in store_diag.keys():
+    if not '/data' in store_pres.keys():
         raise ValueError("There is no data in prescribe data")
 
     pres_df = store_pres.select('data')
