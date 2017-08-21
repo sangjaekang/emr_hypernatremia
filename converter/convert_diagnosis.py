@@ -17,6 +17,7 @@ def set_col_type(col_type):
 
 
 def preprocess_middle_class(df):
+    # 오타를　고치는　함수
     df['중분류명'] = df['중분류명'].str.strip().replace('A92-A99',"A90-A99")
     df['중분류명'] = df['중분류명'].str.strip().replace('G10-G13',"G10-G14")    
     df['중분류명'] = df['중분류명'].str.strip().replace('K55-K63',"K55-K64")
@@ -24,6 +25,7 @@ def preprocess_middle_class(df):
 
 
 def get_mapping_table(df,col_type):
+    #KCD코드를　통일시키는　mapping table을　만드는　함수
     global MAPPING_DIR, KCD_MAPPING_PATH, DEBUG_PRINT
 
     MAPPING_DIR = check_directory(MAPPING_DIR)
@@ -31,7 +33,6 @@ def get_mapping_table(df,col_type):
 
     code_to_class = pd.Series(df[col_type].values, index=df['진단용어코드'])
     class_to_int = pd.Series(range(1,len(df[col_type].unique())+1),index=df[col_type].unique())
-    
     mapping_df = pd.concat([code_to_class,code_to_class.map(class_to_int)],
                 axis=1,keys=code_to_class)
 

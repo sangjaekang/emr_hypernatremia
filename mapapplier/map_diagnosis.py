@@ -8,6 +8,10 @@ from mapapplier.config import *
 from mapapplier.map_common import convert_month, strip_space, check_directory, save_to_hdf5
 
 def save_mapping_to_hdf5():
+    '''
+    mapping table을　hdf5　포맷으로　저장하는　함수
+    metadata/mapping_table에　저장
+    '''
     global MAPPING_DIR, KCD_MAPPING_PATH, PREP_OUTPUT_DIR, DIAGNOSIS_OUTPUT_PATH
 
     MAPPING_DIR = check_directory(MAPPING_DIR)

@@ -14,6 +14,8 @@ demographic_output_path = PREP_OUTPUT_DIR + DEMOGRAPHIC_OUTPUT_PATH
 
 
 def set_age_dummies():
+    # 나이대를　설정해주는　함수
+    # main config파일에　어떻게　나이대를　설정할　것인지　나타나있음（AGE_BREAK_POINTS)
     global demographic_output_path, AGE_BREAK_POINTS, AGE_LABELS
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     demographic_output_path = PREP_OUTPUT_DIR + DEMOGRAPHIC_OUTPUT_PATH

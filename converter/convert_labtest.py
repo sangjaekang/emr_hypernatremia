@@ -37,6 +37,10 @@ def revise_max(x):
 
 
 def change_number(x):
+    '''
+    숫자　표현을　통일
+    （범위　쉼표　등　표현을　단일표현으로　통일）
+    '''
     str_x = str(x).replace(" ","")
 
     re_num   = re.compile('^[+-]{0,1}[\d\s]+[.]{0,1}[\d\s]*$') #숫자로 구성된 데이터를 float로 바꾸어 줌
@@ -59,10 +63,10 @@ def change_number(x):
 
 
 def divide_per_test(lab_test_path):    
+    #labtest 데이터를　test별로　쪼개서　저장
     global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR, USE_LAB_COL_NAME
 
     check_directory(PER_LAB_DIR)
-
 
     # remove temp file in per_lab_directory
     re_per_lab = re.compile("^labtest_.*\.csv") 
@@ -89,6 +93,10 @@ def divide_per_test(lab_test_path):
 
 
 def get_mapping_table():
+    '''
+    labtest의 mapping table을　생성하는　함수
+    평균/ 최솟값/최댓값으로　구성
+    '''
     global DELIM, LAB_COL_NAME, CHUNK_SIZE, PER_LAB_DIR, LAB_MAPPING_PATH
     
     check_directory(MAPPING_DIR)
@@ -99,6 +107,10 @@ def get_mapping_table():
     # if exists, remove output file
     if os.path.isfile(output_path):
         os.remove(output_path)
+
+    # if per_labtest data not exists, raise error
+    if not os.listdir(PER_LAB_DIR):
+        raise ValueError("there is no data in per_lab_directory!")
 
     # get temp file in per_lab_directory
     re_per_lab = re.compile("^labtest_.*\.csv") 

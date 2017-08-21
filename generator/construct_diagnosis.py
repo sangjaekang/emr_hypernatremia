@@ -13,6 +13,11 @@ PREP_OUTPUT_DIR= check_directory(PREP_OUTPUT_DIR)
 diagnosis_output_path = PREP_OUTPUT_DIR + DIAGNOSIS_OUTPUT_PATH
 
 def set_diagnosis_row():
+    '''
+    진단코드를row_index_name으로나열
+    OFFSET_DIAGNOSIS_COUNTS 기준에　따라서，drop 할　row을　결정
+    drop하고　남은　row를　metadata/usecol에　저장
+    '''
     global OFFSET_DIAGNOSIS_COUNTS, diagnosis_output_path
 
     store_diag = pd.HDFStore(diagnosis_output_path)
@@ -31,6 +36,9 @@ def set_diagnosis_row():
 
 
 def get_index_name_map():
+    '''
+    mapping_table에서　row_index에 사용될　name 가져오는　함수
+    '''
     global diagnosis_output_path 
 
     store_diag = pd.HDFStore(diagnosis_output_path)

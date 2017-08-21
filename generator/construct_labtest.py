@@ -14,6 +14,12 @@ labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
 
 
 def set_labtest_row():
+    '''
+    lab_test name를 row_index_name으로나열
+    OFFSET_labtest_COUNTS 기준에　따라서，drop 할　row을　결정
+    drop하고　남은　row를　metadata/usecol에　저장
+    labtest는　labtest 별로　hdf5에　따로　저장되어　있음
+    '''
     global labtest_output_path, OFFSET_LABTEST_COUNTS
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH

@@ -14,6 +14,11 @@ prescribe_output_path = PREP_OUTPUT_DIR + PRESCRIBE_OUTPUT_PATH
 
 
 def set_prescribe_row():
+    '''
+    약품코드를row_index_name으로나열
+    OFFSET_PRESICRIBE_COUNTS 기준에　따라서，drop 할　row을　결정
+    drop하고　남은　row를　metadata/usecol에　저장
+    '''
     global OFFSET_PRESCRIBE_COUNTS, prescribe_output_path
 
     store_pres = pd.HDFStore(prescribe_output_path)
@@ -32,6 +37,9 @@ def set_prescribe_row():
     del use_index_df
 
 def get_index_name_map():
+    '''
+    mapping_table에서　row_index에 사용될　name 가져오는　함수
+    '''
     global prescribe_output_path
 
     store_pres = pd.HDFStore(prescribe_output_path)
@@ -40,6 +48,9 @@ def get_index_name_map():
 
 
 def get_prescribe_df(no):
+    '''
+    환자번호를　넣으면　column은　KCDcode, row는　time-serial의　형태인　dataframe이　나오는　함수
+    '''
     global prescribe_output_path, MEDI_USE_COLS
     store_pres = pd.HDFStore(prescribe_output_path)
 

@@ -16,6 +16,7 @@ def strip_space(x):
 
 
 def apply_strip(df):
+    # dataframe에　strip_space를　적용시킴
     for column in df.columns:
         df[column] = df[column].map(strip_space, na_action='ignore')
     return df
@@ -41,7 +42,7 @@ def remove_reg(from_regs,to_regs=" ",except_case=None):
         x = " " + str(x) + " " # padding space 추가
         re_pattern = re.compile(from_regs)
         str_pattern = re_pattern.search(x)
-
+        
         if str_pattern:
             if x in except_case:
                 return x.strip()
@@ -57,6 +58,10 @@ def remove_reg(from_regs,to_regs=" ",except_case=None):
 
 
 def unify_reg(from_regs,to_regs):
+    '''
+    from_regs 패턴을　to_reg의　형태로　통일시키는　함수
+    map을 위해서, 함수 in 함수 형태로 디자인
+    '''
     def _unify_reg(x):
         x = " " + str(x) +" "
         re_pattern = re.compile(from_regs)
@@ -69,11 +74,14 @@ def unify_reg(from_regs,to_regs):
             return to_regs
         else :
             return x.strip()
-
+t
     return _unify_reg
 
 
 def remove_useless_expr(df):
+    '''
+    성분과　무관한　표현　삭제
+    '''
     meaningless_list = ["™","외","만","종",","," etc "," and ","human"," ophth "," inactivated "]
 
     for word_pattern in meaningless_list:
@@ -83,11 +91,13 @@ def remove_useless_expr(df):
 
 
 def remove_unit_expr(df):
+    '''
+    단위　표현　삭제
+    '''
     # 1. 퍼센트(%) 삭제
     df.성분명 = df.성분명.map(remove_reg(("\\d+(?:\\.\\d+)?%"),""),na_action="ignore")
     # 2. ( : ) 삭제
     df.성분명 = df.성분명.map(remove_reg(("\\d+[:]\d+"),""),na_action="ignore")
-
     # 3. 슬래쉬(/) 삭제
     df.성분명 = df.성분명.map(remove_reg("\/"," ","n/s"),na_action="ignore")
 
@@ -100,6 +110,9 @@ def remove_unit_expr(df):
 
 
 def change_abbreviation(df):
+    '''
+    축약　표현　통일
+    '''
     # 1. calcium 바꾸기
     df.성분명 = df.성분명.map(remove_reg("\s(ca|cal)\s"," calcium "),na_action="ignore")
     df.성분명 = df.성분명.map(remove_reg("\sca\."," calcium "),na_action="ignore")
@@ -116,6 +129,9 @@ def change_abbreviation(df):
 
 
 def revise_misprint_expr(df):
+    '''
+    오타　통일
+    '''
     change_dict = {"acids"        : "acid",  "caffeine"     : "caffein", "cyclosporine" : "cyclosporin",  "estrogens"  : "estrogen",  "i-131mibg" : "i-131 mibg",  "kabiven peripheral" : "kabiven",  "levan-h" : "levan h",  "levothyroxin sodium" : "levothyroxin",  "levothyroxine": "levothyroxin",  "lidocaine hcl": "lidocaine",  "medilac-dc"   : "medilac-ds",  "methyprednisolone" : "methylprednisolone",  "multivitamin" : "multi vitamin",  "multi-vitamin": "multi vitamin",  "nalbuphine"   : "nalbuphin",  "piroxicam-b-cyclodextrin" : "piroxicam",  "premell cycle" : "premell",  "progesterone micronized" : "progesterone",  "rabeprazole"   : "rabeprazol",  "ritodrine hcl" : "ritodrine",  "rosiglitazone maleate ta" : "rosiglitazone maleate",  "rosuvastatin ezetimibe" : "rosuvastatin",  "sevelamer carbonate" : "sevelamer",  "sevelamer hcl"       : "sevalamer",  "silodenafil"         : "sildenafil",  "stay safe balance"           : "stay safe",  "theophylline anhydrous" : "theophylline",  "tisseel kit"         : "tisseel",  "tisseel duo quick"   : "tisseel",  "tissucol duo quick"  : "tisseel",  "venlafaxine xr"      : "venlafaxine",  "velafaxine" : "venlafaxine",  "tripot\." : "tripotassium", "dianela" : "dianeal", "inteferon"            : "interferon", "cefdnir"           : "cefidnir", "sevalemer"           : "sevalamer", "gallamine"           : 'galamine', "trifluorothimidine"  : "trifluorothymidine", "intralipose"         : "intralipos", "acetyl-l-carnitine"  : "acetylcarnitine", "alprostsadil"        : "alprostadil", "citratre"            : "citrate", " beriplast "       : " beriplast-p ", "biphenyl diethyl dicarboxylate" : "biphenyl diehtyl dicarboxylate", "buspirone"           : "buspiron", "ciprofolxacin"       : "ciprofloxacin",  "danazole"           : "danazol", "dantrolen "  : "dantrolene ", "dihydroergocriptin " : "dihydroergocriptine ", "doxazocin" : "doxazosin", "hci" : "hcl", "famcyclovir" : "famciclovir", " hbr "    : "hydrobromide", "gingko" : "ginkgo", "\.\."  : "", "hydroxypropylmethylcellulose" : "hydroxypropylmethyl cellulose", "itraconazole"  : "itraconazol", "trometamine"          : "tromethamine", "metformine"           : "metformin", "methylpenidate"       : "methylphenidate", "microemulsoin" : "microemulsion", "oxybutinin"           : "oxybutynin", " raloxifen "  : " raloxifene ", " pyridoxin " : " pyridoxine ", "sevalamer "   : "sevelamer ", "simenthicone"         : "simethicone", "terazocin" : "terazosin", "ursodesoxycholic"     : "ursodeoxycholic", "5mg*20포낭" : ""}
     for key,item in change_dict.items():
         df.성분명 = df.성분명.map(remove_reg(key,item),na_action="ignore")
@@ -146,11 +162,9 @@ def remove_surplus_expr(df):
 def get_mapping_table():
     global MAPPING_DIR, MEDICINE_CONTEXT_PATH, MEDICINE_MAPPING_PATH, DELIM
     MAPPING_DIR = check_directory(MAPPING_DIR)
-
     output_path = MAPPING_DIR + MEDICINE_MAPPING_PATH
 
     medicine_context_df = pd.read_excel(MEDICINE_CONTEXT_PATH)
-
     medicine_context_df.drop(medicine_context_df.columns[[1, 2, 3, 5, 6]], axis=1,inplace=True)
     # ['약품코드', '약품명', '시작일자', '종료일자', '성분명', 'ATC분류코드', 'ATC분류설명']
 
