@@ -47,6 +47,9 @@ def get_index_name_map():
 
 
 def get_diagnosis_df(no):
+    '''
+    환자번호를　넣으면　column은　KCDcode, row는　time-serial의　형태인　dataframe이　나오는　함수
+    '''
     global diagnosis_output_path, KCD_USE_COLS, DIAG_TIME_INTERVAL
     
     store_diag = pd.HDFStore(diagnosis_output_path)
