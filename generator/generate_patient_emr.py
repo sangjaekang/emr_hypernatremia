@@ -6,7 +6,7 @@ BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
 sys.path.append(BASE_PATH)
 from generator.config import *
 
-from generator.consturct_demographic import get_demo_df
+from generator.construct_demographic import get_demo_df
 from generator.construct_diagnosis import get_diagnosis_df
 from generator.construct_labtest import get_labtest_df
 from generator.construct_prescribe import get_prescribe_df

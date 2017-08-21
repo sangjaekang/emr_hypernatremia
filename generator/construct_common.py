@@ -40,6 +40,7 @@ def yield_time_column(time,end_t):
     # time-series column을　만드는데　있어서　순차적으로　생성하는　함수X
     # 1210 1211 1212 1301 1302 이런식으로　생성
     while time <= end_t:
+        yield time
         year = time // 100 ; month = time % 100
         if month >= 12 :
             year = year + 1
@@ -47,8 +48,7 @@ def yield_time_column(time,end_t):
         else : 
             month = month + 1
         time = (year*100 + month) 
-        yield time
-
+        
 
 def get_timeseries_column():
     global START_TIME, END_TIME
