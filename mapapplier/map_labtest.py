@@ -20,7 +20,14 @@ def normalize_number(mean_x,min_x,max_x):
         re_upper = re.compile('^>[\d\s]*[.]{0,1}[\d\s]*$')
         re_star = re.compile('^[\s]*[*][\s]*$')
         if re_num.match(str_x):
-            return (np.float(str_x) - min_x)/(max_x-min_x)
+            # 숫자형태일경우
+            float_x = np.float(str_x)
+            if float_x > max_x:
+                return 1
+            elif float_x < min_x:
+                return 0
+            else:
+                return (np.float(str_x) - min_x)/(max_x-min_x)
         else:
             if re_lower.match(str_x):
                 return np.float(0)
@@ -45,7 +52,6 @@ def get_labtest_map():
 
     MAPPING_DIR = check_directory(MAPPING_DIR)
     lab_mapping_path = MAPPING_DIR + LAB_MAPPING_PATH
-
 
     if not os.path.isfile(lab_mapping_path):
         raise ValueError("There is no labtest_OUTPUT file!")
