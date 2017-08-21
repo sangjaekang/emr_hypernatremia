@@ -5,7 +5,7 @@ os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
 BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
 sys.path.append(BASE_PATH)
 from generator.config import *
-from generator.construct_common import check_directory, save_to_hdf5
+from generator.construct_common import check_directory, save_to_hdf5, get_timeseries_column
 
 # output path setting
 global PREP_OUTPUT_DIR, DEMOGRAPHIC_OUTPUT_PATH
@@ -45,3 +45,12 @@ def get_demographic_series(no):
         set_age_dummies(); store_demo.open()
 
     return store_demo.select('/data/dummy',where='no=={}'.format(no)).squeeze().drop('no')
+
+def get_demo_df(no):
+    per_demo_series = get_demographic_series(no)
+    per_demo_df = pd.DataFrame(index=per_demo_series.index, columns=get_timeseries_column())
+    
+    for column in per_demo_df.columns:
+        per_demo_df[column] = per_demo_series
+
+    return per_demo_df
