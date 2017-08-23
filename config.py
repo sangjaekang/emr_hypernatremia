@@ -15,6 +15,10 @@ NUM_CORES = 4 # multi-processing
 
 DELIM = ',' 
 
+## the number of patients
+
+PATIENT_COUNT = 549743
+
 ## time period among data
 START_TIME = 20100101
 END_TIME  = 20161231
@@ -73,6 +77,7 @@ PRESCRIBE_OUTPUT_PATH = 'pre_prescribe_df.h5'
 DIAGNOSIS_OUTPUT_PATH = 'pre_diagnosis_df.h5'
 DEMOGRAPHIC_OUTPUT_PATH = 'pre_demographic_df.h5'
 IMPUTATION_OUTPUT_PATH ='imputation_df.h5'
+SAMPLE_PATIENT_PATH = 'sample_patient_df.h5'
 
 ## TEMP file path
 TEMP_PATH = 'temp_output.csv'
