@@ -5,14 +5,14 @@ os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
 BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
 sys.path.append(BASE_PATH)
 
+from imputator.config import *
+from imputator.impute_common import check_directory, get_timeseries_column, get_time_interval
+from generator.generate_patient_emr import generate_emr
+
 # output path setting
 global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH
 PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
 labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
-
-from imputator.config import *
-from imputator.impute_common import check_directory, get_timeseries_column, get_time_interval
-from generator.generate_patient_emr import generate_emr
 
 '''
 응급코드와　비응급코드는　결과값을　공유
@@ -47,11 +47,8 @@ emgcy_and_not_dict = {
 
 
 def get_labtest_avg_map():
-    global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH, DELIM
-
-    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
-    labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
-
+    global labtest_output_path
+    
     if not os.path.isfile(labtest_output_path):
         raise ValueError("There is no labtest_OUTPUT file!")
 
