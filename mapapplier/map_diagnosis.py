@@ -1,6 +1,6 @@
-#-*- encoding :utf-8 -*-
+# -*- coding :utf-8 -*-
 import sys, os, re
-# 상위 폴더의 config를 import하기 위한 경로 설정
+
 os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
 BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
 sys.path.append(BASE_PATH)
@@ -26,6 +26,9 @@ def save_mapping_to_hdf5():
     save_to_hdf5(KCD_output_path, diagnosis_output_path,'metadata/mapping_table')
 
 def get_diagnosis_map():
+    '''
+    mapping table을　dictionary 형태로　가져오는　함수
+    '''
     global MAPPING_DIR, KCD_MAPPING_PATH
 
     MAPPING_DIR = check_directory(MAPPING_DIR)

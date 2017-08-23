@@ -1,4 +1,4 @@
-#-*-encoding:utf-8-*-
+# -*- coding :utf-8 -*-
 import pandas as pd
 import numpy as np
 import re
@@ -56,7 +56,7 @@ PREP_OUTPUT_DIR  = DATA_DIR + 'prep/'
 MAPPING_DIR      = DATA_DIR + 'map_table/'
 PER_LAB_DIR      = DATA_DIR + 'per_lab/'
 PER_PATIENT_DIR = DATA_DIR + 'patient/'
-
+IMPUTATION_DIR = DATA_DIR +'imputation/'
 
 ## convert mapping input data path
 KCD_PATH = DATA_DIR + 'KCD.xlsx'
@@ -72,6 +72,7 @@ LABTEST_OUTPUT_PATH = 'pre_labtest_df.h5'
 PRESCRIBE_OUTPUT_PATH = 'pre_prescribe_df.h5'
 DIAGNOSIS_OUTPUT_PATH = 'pre_diagnosis_df.h5'
 DEMOGRAPHIC_OUTPUT_PATH = 'pre_demographic_df.h5'
+IMPUTATION_OUTPUT_PATH ='imputation_df.h5'
 
 ## TEMP file path
 TEMP_PATH = 'temp_output.csv'

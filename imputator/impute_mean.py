@@ -1,6 +1,6 @@
-#-*- encoding :utf-8 -*-
+# -*- coding :utf-8 -*-
 import sys, os, re
-# 상위 폴더의 config를 import하기 위한 경로 설정
+
 os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
 BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
 sys.path.append(BASE_PATH)
@@ -48,7 +48,7 @@ emgcy_and_not_dict = {
 
 def get_labtest_avg_map():
     global labtest_output_path
-    
+
     if not os.path.isfile(labtest_output_path):
         raise ValueError("There is no labtest_OUTPUT file!")
 
@@ -132,4 +132,6 @@ def get_mean_emr(no):
     bool_df = get_boolmask_emr(emr_df)
     imputed_df = get_imputation_emr(emr_df)
 
-    return np.stack((bool_df,imputed_df),axis=-1)
+    result = np.stack((bool_df,imputed_df),axis=-1)
+    result = result.astype(float)
+    return return result

@@ -1,6 +1,6 @@
 #-*- encoding :utf-8 -*-
 import sys, os, re
-# 상위 폴더의 config를 import하기 위한 경로 설정
+
 os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
 BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
 sys.path.append(BASE_PATH)
