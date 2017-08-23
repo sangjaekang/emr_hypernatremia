@@ -52,9 +52,11 @@ BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
 
 ## data directory
 DATA_DIR  = BASE_PATH + '/data/'
-PREP_OUTPUT_DIR  = BASE_PATH + '/data/prep/'
-MAPPING_DIR      = BASE_PATH + '/data/map_table/'
-PER_LAB_DIR      = BASE_PATH + '/data/per_lab/'
+PREP_OUTPUT_DIR  = DATA_DIR + 'prep/'
+MAPPING_DIR      = DATA_DIR + 'map_table/'
+PER_LAB_DIR      = DATA_DIR + 'per_lab/'
+PER_PATIENT_DIR = DATA_DIR + 'patient/'
+
 
 ## convert mapping input data path
 KCD_PATH = DATA_DIR + 'KCD.xlsx'

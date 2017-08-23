@@ -69,23 +69,24 @@ def get_labtest_df(no):
         pre_value = None
         for value in target_df.values:
             _, _date, _result = value
-            if pre_value is not None:
-                min_time = pre_value[1];max_time =_date
-                min_value = pre_value[2];max_value = _result
-                inter_time = get_time_interval(min_time,max_time)
-                for i in result_lab_series.loc[pre_value[1]:_date].index:
-                    intpol_time = get_time_interval(min_time,i) / inter_time
-                    intpol_value = (max_value-min_value)*intpol_time + min_value
-                    result_df.loc[lab_name].loc[i] = intpol_value
-                pre_value = value
-            else :
-                result_df.loc[lab_name].loc[:_date] = _result
-                pre_value = value
+            result_df.loc[lab_name].loc[_date] = _result
+            # if pre_value is not None:
+            #     min_time = pre_value[1];max_time =_date
+            #     min_value = pre_value[2];max_value = _result
+            #     inter_time = get_time_interval(min_time,max_time)
+            #     for i in result_lab_series.loc[pre_value[1]:_date].index:
+            #         intpol_time = get_time_interval(min_time,i) / inter_time
+            #         intpol_value = (max_value-min_value)*intpol_time + min_value
+            #         result_df.loc[lab_name].loc[i] = intpol_value
+            #     pre_value = value
+            # else :
+            #     result_df.loc[lab_name].loc[:_date] = _result
+            #     pre_value = value
 
-        missing_index = result_lab_series[result_lab_series.isnull()].index
-        if missing_index.min() > col_list[0]:
-            last_loc = result_df.columns.get_loc(missing_index.min()) - 1
-            result_df.loc[lab_name].iloc[last_loc+1:]= result_df.loc[lab_name].iloc[last_loc]
+        # missing_index = result_lab_series[result_lab_series.isnull()].index
+        # if missing_index.min() > col_list[0]:
+        #     last_loc = result_df.columns.get_loc(missing_index.min()) - 1
+        #     result_df.loc[lab_name].iloc[last_loc+1:]= result_df.loc[lab_name].iloc[last_loc]
 
     del target_df
 
