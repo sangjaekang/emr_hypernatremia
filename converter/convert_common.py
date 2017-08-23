@@ -1,4 +1,4 @@
-#-*- encoding :utf-8 -*-
+# -*- coding: utf-8 -*-
 import sys, os, re
 
 os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
