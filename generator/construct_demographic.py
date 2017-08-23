@@ -20,7 +20,7 @@ def set_age_dummies():
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     demographic_output_path = PREP_OUTPUT_DIR + DEMOGRAPHIC_OUTPUT_PATH
 
-    store_demo = pd.HDFStore(demographic_output_path)
+    store_demo = pd.HDFStore(demographic_output_path,mode='r')
 
     demo_except_age = store_demo.select('data/original',columns=['no','sex'])
     demo_age = store_demo.select('data/original',columns=['age'])
@@ -38,7 +38,7 @@ def set_age_dummies():
 def get_demographic_series(no):
     global demographic_output_path
 
-    store_demo = pd.HDFStore(demographic_output_path)
+    store_demo = pd.HDFStore(demographic_output_path,mode='r')
 
     # if there is no dummy dataframe, set it
     if not '/data/dummy' in store_demo.keys():

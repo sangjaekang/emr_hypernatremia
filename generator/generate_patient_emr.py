@@ -12,7 +12,7 @@ from generator.construct_labtest import get_labtest_df
 from generator.construct_prescribe import get_prescribe_df
 
 
-def generate_emr(no,emr_type={'demo','diag','lab','pres'}):
+def generate_emr(no,emr_types={'demo','diag','lab','pres'}):
     '''
     emr_data를　구성할　때，　어떤　dataset의　합으로　구성할　것인지　선택
     emr_type은　set형식으로，　원하는　dataset의　이름을　넣으면됨

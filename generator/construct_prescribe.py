@@ -21,7 +21,7 @@ def set_prescribe_row():
     '''
     global OFFSET_PRESCRIBE_COUNTS, prescribe_output_path
 
-    store_pres = pd.HDFStore(prescribe_output_path)
+    store_pres = pd.HDFStore(prescribe_output_path,mode='r')
     if not '/data' in store_pres.keys():
         raise ValueError("There is no data in prescribe data")
 
@@ -42,7 +42,7 @@ def get_index_name_map():
     '''
     global prescribe_output_path
 
-    store_pres = pd.HDFStore(prescribe_output_path)
+    store_pres = pd.HDFStore(prescribe_output_path,mode='r')
     class_map_df=store_pres.select('metadata/mapping_table',columns=['ingd_name','mapping_code']).drop_duplicates()
     return class_map_df.set_index('mapping_code').to_dict()['ingd_name']
 
@@ -52,10 +52,10 @@ def get_prescribe_df(no):
     환자번호를　넣으면　column은　KCDcode, row는　time-serial의　형태인　dataframe이　나오는　함수
     '''
     global prescribe_output_path, MEDI_USE_COLS
-    store_pres = pd.HDFStore(prescribe_output_path)
+    store_pres = pd.HDFStore(prescribe_output_path,mode='r')
 
     if not '/metadata/usecol' in store_pres.keys():
-        set_prescribe_row(); store_pres = pd.HDFStore(prescribe_output_path)
+        set_prescribe_row(); store_pres = pd.HDFStore(prescribe_output_path,mode='r')
 
     col_list = get_timeseries_column()
     # create empty dataframe

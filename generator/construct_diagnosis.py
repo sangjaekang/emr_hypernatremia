@@ -20,7 +20,7 @@ def set_diagnosis_row():
     '''
     global OFFSET_DIAGNOSIS_COUNTS, diagnosis_output_path
 
-    store_diag = pd.HDFStore(diagnosis_output_path)
+    store_diag = pd.HDFStore(diagnosis_output_path,mode='r')
     if not '/data' in store_diag.keys():
         raise ValueError("There is no data in diagnosis data")
 
@@ -41,7 +41,7 @@ def get_index_name_map():
     '''
     global diagnosis_output_path 
 
-    store_diag = pd.HDFStore(diagnosis_output_path)
+    store_diag = pd.HDFStore(diagnosis_output_path,mode='r')
     class_map_df = store_diag.select('metadata/mapping_table',columns=['class_code','mapping_code']).drop_duplicates()
     return class_map_df.set_index('mapping_code').to_dict()['class_code']
 
@@ -52,10 +52,10 @@ def get_diagnosis_df(no):
     '''
     global diagnosis_output_path, KCD_USE_COLS, DIAG_TIME_INTERVAL
     
-    store_diag = pd.HDFStore(diagnosis_output_path)
+    store_diag = pd.HDFStore(diagnosis_output_path,mode='r')
     
     if not '/metadata/usecol' in store_diag.keys():
-        set_diagnosis_row(); store_diag = pd.HDFStore(diagnosis_output_path)
+        set_diagnosis_row(); store_diag = pd.HDFStore(diagnosis_output_path,mode='r')
 
     col_list = get_timeseries_column()    
     # create empty dataframe 

@@ -24,7 +24,7 @@ def set_labtest_row():
     global labtest_output_path, OFFSET_LABTEST_COUNTS
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
-    store_lab = pd.HDFStore(labtest_output_path)
+    store_lab = pd.HDFStore(labtest_output_path,mode='r')
 
     data_node = store_lab.get_node('data')
     if not data_node:
@@ -50,10 +50,10 @@ def get_labtest_df(no):
     환자번호를　넣으면　column은　KCDcode, row는　time-serial의　형태인　dataframe이　나오는　함수
     '''
     global labtest_output_path
-    store_lab = pd.HDFStore(labtest_output_path)
+    store_lab = pd.HDFStore(labtest_output_path,mode='r')
     
     if not '/metadata/usecol' in store_lab.keys():
-        set_labtest_row(); store_lab = pd.HDFStore(labtest_output_path)
+        set_labtest_row(); store_lab = pd.HDFStore(labtest_output_path,mode='r')
 
     col_list = get_timeseries_column()
     # create empty dataframe
