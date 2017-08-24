@@ -61,6 +61,7 @@ MAPPING_DIR      = DATA_DIR + 'map_table/'
 PER_LAB_DIR      = DATA_DIR + 'per_lab/'
 PER_PATIENT_DIR = DATA_DIR + 'patient/'
 IMPUTATION_DIR = DATA_DIR +'imputation/'
+INPUT_DIR = DATA_DIR +'input/'
 
 ## convert mapping input data path
 KCD_PATH = DATA_DIR + 'KCD.xlsx'

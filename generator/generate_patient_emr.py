@@ -109,3 +109,30 @@ def get_patient_timeseries_label(no):
         result_series[x_date]=x_label
     
     return result_series
+
+
+def save_patient_input(no_range):
+    global INPUT_DIR, DEBUG_PRINT
+
+    for no in no_range:
+        emr_df = generate_emr(no,{'lab'})
+        label_series = get_patient_timeseries_label(no)
+
+        colist = list(emr_df.columns)
+
+        for i in range(0,len(colist) - (time_length+gap_length+target_length)):
+            window = emr_df.loc[:,colist[i]:colist[time_length-1+i]]
+            if window.count().sum() > offset_detect_counts:
+                target_stime = colist[time_length-1+gap_length+i]
+                label_value = check_label(label_series.loc[target_stime:target_stime+target_length-1])
+                
+                if np.isnan(label_value): continue
+
+                o_path = INPUT_DIR +'{}/'.format(label_value)
+                if not os.path.isdir(o_path):
+                    os.makedirs(o_path)
+                    
+                file_path = o_path + "{}_{}.npy".format(no,i)
+                np.save(file_path,window.as_matrix())
+                if DEBUG_PRINT:
+                    print("{} is saved!".format(file_path))
