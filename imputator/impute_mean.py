@@ -173,13 +173,13 @@ def get_np_imputation_emr(np_array):
         else:
             prev_ind = None
             for ind in inds[:,0]:
-                 if prev_ind is not None:
+                if prev_ind is not None:
                     prev_value = result_array[i,prev_ind]
                     curr_value = result_array[i,ind]
                     for input_index in range(prev_ind,ind+1):
                         result_array[i,input_index] = \
                         (curr_value-prev_value)/(ind-prev_ind)*(input_index-prev_ind)+prev_value
-                    prev_ind = ind
+                prev_ind = ind
             result_array[i,:inds[:,0][0]] = result_array[i,inds[:,0][0]]
             result_array[i,inds[:,0][-1]:] = result_array[i,inds[:,0][-1]]
     return result_array
