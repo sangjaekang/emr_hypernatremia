@@ -10,7 +10,7 @@ from generator.construct_demographic import get_demo_df
 from generator.construct_diagnosis import get_diagnosis_df
 from generator.construct_labtest import get_labtest_df
 from generator.construct_prescribe import get_prescribe_df
-
+from generator.construct_common import check_directory, save_to_hdf5, get_timeseries_column, get_time_interval
 
 def generate_emr(no,emr_types={'demo','diag','lab','pres'}):
     '''
@@ -52,7 +52,7 @@ def mean_with_nan(x,y):
             if np.isnan(y.values[i]):
                 result_series.iloc[i] = x.values[i]
             else:
-                result_series.iloc[i] = np.mean((x.values[i],y.values[i]))
+                result_series.iloc[i] = 3
     return result_series
 
 
@@ -88,10 +88,24 @@ def generate_emr_with_na_result(no,emr_types={'demo','diag','lab','pres'}):
     hyper_na = (145-na_min)/(na_max-na_min);    hypo_na  = (135-na_min)/(na_max-na_min)
     hyper_e_na = (145-na_e_min)/(na_e_max-na_e_min);    hypo_e_na = (135-na_e_min)/(na_e_max-na_e_min)
     
-    na_result = a.loc['L3041'].map(change_label(hyper_na,hypo_na))
-    na_e_result = a.loc['L8041'].map(change_label(hyper_e_na,hypo_e_na))
+    na_result = emr_df.loc['L3041'].map(change_label(hyper_na,hypo_na))
+    na_e_result = emr_df.loc['L8041'].map(change_label(hyper_e_na,hypo_e_na))
     
     t_result = mean_with_nan(na_e_result,na_result)
-    emr_df['result'] = t_result
+    emr_df.loc['result'] = t_result
 
     return emr_df
+
+def get_patient_timeseries_label(no):
+    global  PREP_OUTPUT_DIR,  SAMPLE_PATIENT_PATH
+    # syntax checking existence for directory
+    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
+    output_path = PREP_OUTPUT_DIR + SAMPLE_PATIENT_PATH
+    x = pd.HDFStore(output_path).select('data/na_label')
+
+    result_series = pd.Series(index=get_timeseries_column())
+    
+    for _,x_date,x_label in x[x.no==no].values:
+        result_series[x_date]=x_label
+    
+    return result_series
