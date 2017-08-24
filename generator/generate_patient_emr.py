@@ -38,63 +38,6 @@ def generate_emr(no,emr_types={'demo','diag','lab','pres'}):
     return emr_df
 
 
-def mean_with_nan(x,y):
-    len_x = len(x.values)
-    result_series = pd.Series(index=x.index)
-    
-    for i in range(len_x):
-        if np.isnan(x.values[i]):
-            if np.isnan(y.values[i]):
-                result_series.iloc[i] = np.nan
-            else:
-                result_series.iloc[i] = y.values[i]
-        else:
-            if np.isnan(y.values[i]):
-                result_series.iloc[i] = x.values[i]
-            else:
-                result_series.iloc[i] = 3
-    return result_series
-
-
-def change_label(hyper_na,hypo_na):    
-    def _change_label(x):
-        if np.isnan(x):
-            return np.nan
-        else :
-            if x > hyper_na:
-                return 2
-            elif x < hypo_na:
-                return 1
-            else : 
-                return 0
-    return _change_label
-
-
-def generate_emr_with_na_result(no,emr_types={'demo','diag','lab','pres'}):
-    global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH
-
-    # syntax checking existence for directory
-    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
-    output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
-
-    emr_df = generate_emr(no,emr_types)
-
-    labtest_df = pd.HDFStore(output_path,mode='r')
-    mapping_df = labtest_df.select('metadata/mapping_table')
-    labtest_df.close()
-    _,na_avg,na_min,na_max = mapping_df[mapping_df.labtest == 'L3041'].values[0]
-    _,na_e_avg,na_e_min,na_e_max = mapping_df[mapping_df.labtest == 'L8041'].values[0]
-
-    hyper_na = (145-na_min)/(na_max-na_min);    hypo_na  = (135-na_min)/(na_max-na_min)
-    hyper_e_na = (145-na_e_min)/(na_e_max-na_e_min);    hypo_e_na = (135-na_e_min)/(na_e_max-na_e_min)
-    
-    na_result = emr_df.loc['L3041'].map(change_label(hyper_na,hypo_na))
-    na_e_result = emr_df.loc['L8041'].map(change_label(hyper_e_na,hypo_e_na))
-    
-    t_result = mean_with_nan(na_e_result,na_result)
-    emr_df.loc['result'] = t_result
-
-    return emr_df
 
 def get_patient_timeseries_label(no):
     global  PREP_OUTPUT_DIR,  SAMPLE_PATIENT_PATH
@@ -109,6 +52,23 @@ def get_patient_timeseries_label(no):
         result_series[x_date]=x_label
     
     return result_series
+
+
+def check_label(x):
+    both_exists = x.isin([3]).sum()
+    hyper_exists = x.isin([2]).sum()
+    hypo_exists = x.isin([1]).sum()
+    normal_exists = x.isin([0]).sum()
+    if both_exists:
+        return 3
+    if hyper_exists:
+        return 2
+    if hypo_exists:
+        return 1
+    if normal_exists:
+        return 0
+    else:
+        return np.nan
 
 
 def save_patient_input(no_range):
