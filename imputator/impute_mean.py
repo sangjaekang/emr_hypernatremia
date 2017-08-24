@@ -35,7 +35,7 @@ labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
 |LDH|L8053|L3057|
 '''
 
-emgcy_and_not_dict = {
+EMGCY_AND_NOT_DICT = {
     'L8031' : 'L3011', 'L8032':'L3012',
     'L8036':'L3013',   'L8037':'L3018',
     'L8038':'L3020',   'L8041':'L3041',
@@ -45,7 +45,15 @@ emgcy_and_not_dict = {
     'L8049':'L3013',   'L8050':'L3029', 'L8053':'L3057'
 }
 
+LAB_INDEX = ['L2011', 'L2013', 'L2014', 'L2017', 'L3011', 'L3012', 'L3013', 'L3018',
+       'L3019', 'L3020', 'L3021', 'L3022', 'L3023', 'L3029', 'L3030', 'L3034',
+       'L3041', 'L3042', 'L3043', 'L3044', 'L3045', 'L3057', 'L3062', 'L3122',
+       'L3123', 'L3124', 'L3127', 'L312701', 'L312702', 'L3532', 'L3535',
+       'L3551', 'L3554', 'L3555', 'L3761', 'L3844', 'L8031', 'L8032', 'L8036',
+       'L8037', 'L8038', 'L8041', 'L8042', 'L8043', 'L8044', 'L8046', 'L8047',
+       'L8048', 'L8049', 'L8050', 'L8053', 'L8065', 'L8066']
 
+       
 def get_labtest_avg_map():
     global labtest_output_path
 
@@ -81,11 +89,11 @@ def _isn_nan(x):
 
 def get_imputation_emr(df):
     emr_df = df.copy()
-    global emgcy_and_not_dict
+    global EMGCY_AND_NOT_DICT
 
     lab_avg_map = get_labtest_avg_map()
     # 응급코드와　비응급코드의　수치를　평균해서　각각의　행에　재입력
-    for emg,not_emg in emgcy_and_not_dict.items():
+    for emg,not_emg in EMGCY_AND_NOT_DICT.items():
         avg_test = _mean_with_nan(emr_df.loc[emg],emr_df.loc[not_emg])
         emr_df.loc[emg] = avg_test
         emr_df.loc[not_emg] = avg_test
@@ -134,4 +142,82 @@ def get_mean_emr(no):
 
     result = np.stack((bool_df,imputed_df),axis=-1)
     result = result.astype(float)
+    return result
+
+
+def _nan_or_not(x):
+    return 0 if np.isnan(x) else 1
+
+
+def _suffle_time(x): 
+    return np.int(np.floor(np.random.normal(scale=x)))
+
+
+def get_np_bool_emr(np_array):
+    nan_or_not = np.vectorize(_nan_or_not,otypes=[np.float])
+    bool_array = nan_or_not(np.array(np_array,copy=True))
+    return bool_array
+
+
+def get_np_imputation_emr(np_array):
+    global LAB_INDEX
+    result_array = np.array(np_array,copy=True)
+    lab_avg_map = get_labtest_avg_map()
+
+    for i in range(result_array.shape[0]):
+        inds = np.argwhere(~np.isnan(result_array[i,:]))
+        if inds.size == 0: 
+            result_array[i,:] = lab_avg_map[LAB_INDEX[i]]
+        elif inds.size == 1:
+            result_array[i,:] = result_array[i,inds[0,0]]
+        else:
+            prev_ind = None
+            for ind in inds[:,0]:
+                if prev_ind:
+                    prev_value = result_array[i,prev_ind]
+                    curr_value = result_array[i,ind]
+                    
+                    for input_index in range(prev_ind,ind+1):
+                        result_array[i,input_index] = \
+                        (curr_value-prev_value)/(ind-prev_ind)*(input_index-prev_ind)+prev_value
+                prev_ind = ind
+            result_array[i,:inds[:,0][0]] = result_array[i,inds[:,0][0]]
+            result_array[i,inds[:,0][-1]:] = result_array[i,inds[:,0][-1]]
+    return result_array
+
+
+def get_np_array_emr(input_path):
+    global LAB_INDEX, EMGCY_AND_NOT_DICT
+    np_array = np.load(input_path)
+    np_array = np_array.astype(float)
+    
+    # share the value between emergency code and not
+    np_array = pd.DataFrame(index=LAB_INDEX,data=np_array)
+    lab_avg_map = get_labtest_avg_map()
+
+    for emg,not_emg in EMGCY_AND_NOT_DICT.items():
+        avg_test = _mean_with_nan(np_array.loc[emg],np_array.loc[not_emg])
+        np_array.loc[emg] = avg_test
+        np_array.loc[not_emg] = avg_test
+
+    np_array= np_array.as_matrix()
+
+    # shuffling time for data augumentation
+    result_array = np.full(np_array.shape,np.nan)
+    
+    r_time = np_array.shape[1]
+    for x,y in np.argwhere(~np.isnan(np_array)):
+        m_y = y+_suffle_time(1)
+        while (m_y<0)|(m_y>=r_time):m_y = y+_suffle_time(1)
+        result_array[x,m_y] = np_array[x,y]
+
+    # get boolean mask
+    bool_array = get_np_bool_emr(result_array)
+    # get imputation mask
+    imput_array = get_np_imputation_emr(result_array)
+
+    result = np.stack((bool_array,imput_array),axis=-1)
+
+    del bool_array, imput_array, np_array
+
     return result
