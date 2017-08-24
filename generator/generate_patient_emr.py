@@ -71,7 +71,7 @@ def check_label(x):
         return np.nan
 
 
-def save_patient_input(no_range):
+def save_patient_input(no_range,time_length=12,gap_length=3,target_length=3,offset_detect_counts=50):
     global INPUT_DIR, DEBUG_PRINT
 
     for no in no_range:
