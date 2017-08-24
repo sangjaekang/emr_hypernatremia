@@ -33,6 +33,6 @@ def run():
     result_df = result_df.count(1).to_frame('count')
     result_df.index.name = 'no'
 
-    result_df.to_hdf5(output_path,"metadata/patient_count",format='table',data_columns=True,mode='a')
+    result_df.to_hdf(output_path,"metadata/patient_count",format='table',data_columns=True,mode='a')
     del result_df
 

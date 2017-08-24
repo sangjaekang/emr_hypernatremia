@@ -134,4 +134,4 @@ def get_mean_emr(no):
 
     result = np.stack((bool_df,imputed_df),axis=-1)
     result = result.astype(float)
-    return return result
+    return result
