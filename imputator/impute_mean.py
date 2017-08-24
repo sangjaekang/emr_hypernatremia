@@ -179,7 +179,7 @@ def get_np_imputation_emr(np_array):
                     for input_index in range(prev_ind,ind+1):
                         result_array[i,input_index] = \
                         (curr_value-prev_value)/(ind-prev_ind)*(input_index-prev_ind)+prev_value
-                prev_ind = ind
+                    prev_ind = ind
             result_array[i,:inds[:,0][0]] = result_array[i,inds[:,0][0]]
             result_array[i,inds[:,0][-1]:] = result_array[i,inds[:,0][-1]]
     return result_array
