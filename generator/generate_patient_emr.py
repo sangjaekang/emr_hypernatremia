@@ -71,9 +71,15 @@ def change_label(hyper_na,hypo_na):
 
 
 def generate_emr_with_na_result(no,emr_types={'demo','diag','lab','pres'}):
+    global PREP_OUTPUT_DIR, LABTEST_OUTPUT_PATH
+
+    # syntax checking existence for directory
+    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
+    output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
+
     emr_df = generate_emr(no,emr_types)
 
-    labtest_df = pd.HDFStore(,mode='r')
+    labtest_df = pd.HDFStore(output_path,mode='r')
     mapping_df = labtest_df.select('metadata/mapping_table')
     labtest_df.close()
     _,na_avg,na_min,na_max = mapping_df[mapping_df.labtest == 'L3041'].values[0]
