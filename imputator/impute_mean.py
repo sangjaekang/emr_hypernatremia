@@ -186,14 +186,18 @@ def get_np_imputation_emr(np_array):
     return result_array
 
 
-def get_np_array_emr(input_path):
+def get_np_array_emr(input_path,shuffling=True):
     global LAB_INDEX, EMGCY_AND_NOT_DICT
+    
+    # 50%, not shuffling
+    if np.random.randint(0,2):
+        shuffling=False
+
     np_array = np.load(input_path)
     np_array = np_array.astype(float)
     
     # share the value between emergency code and not
     np_array = pd.DataFrame(index=LAB_INDEX,data=np_array)
-    lab_avg_map = get_labtest_avg_map()
 
     for emg,not_emg in EMGCY_AND_NOT_DICT.items():
         avg_test = _mean_with_nan(np_array.loc[emg],np_array.loc[not_emg])
@@ -204,12 +208,14 @@ def get_np_array_emr(input_path):
 
     # shuffling time for data augumentation
     result_array = np.full(np_array.shape,np.nan)
-    
-    r_time = np_array.shape[1]
-    for x,y in np.argwhere(~np.isnan(np_array)):
-        m_y = y+_suffle_time(1)
-        while (m_y<0)|(m_y>=r_time):m_y = y+_suffle_time(1)
-        result_array[x,m_y] = np_array[x,y]
+    if shuffling:
+        r_time = np_array.shape[1]
+        for x,y in np.argwhere(~np.isnan(np_array)):
+            m_y = y+_suffle_time(1)
+            while (m_y<0)|(m_y>=r_time):m_y = y+_suffle_time(1)
+            result_array[x,m_y] = np_array[x,y]
+    else:
+        result_array = np.array(np_array,copy=True)
 
     # get boolean mask
     bool_array = get_np_bool_emr(result_array)
