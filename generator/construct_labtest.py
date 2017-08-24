@@ -21,9 +21,7 @@ def set_labtest_row():
     labtest는　labtest 별로　hdf5에　따로　저장되어　있음
     그래서　get_index_map으로　부르지않음
     '''
-    global labtest_output_path, OFFSET_LABTEST_COUNTS
-    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
-    labtest_output_path = PREP_OUTPUT_DIR + LABTEST_OUTPUT_PATH
+    global labtest_output_path
     store_lab = pd.HDFStore(labtest_output_path,mode='r')
 
     data_node = store_lab.get_node('data')
