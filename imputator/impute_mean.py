@@ -173,10 +173,9 @@ def get_np_imputation_emr(np_array):
         else:
             prev_ind = None
             for ind in inds[:,0]:
-                if prev_ind:
+                 if prev_ind is not None:
                     prev_value = result_array[i,prev_ind]
                     curr_value = result_array[i,ind]
-                    
                     for input_index in range(prev_ind,ind+1):
                         result_array[i,input_index] = \
                         (curr_value-prev_value)/(ind-prev_ind)*(input_index-prev_ind)+prev_value
