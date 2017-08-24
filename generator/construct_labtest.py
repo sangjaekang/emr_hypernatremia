@@ -51,7 +51,11 @@ def get_labtest_df(no):
     store_lab = pd.HDFStore(labtest_output_path,mode='r')
     
     if not '/metadata/usecol' in store_lab.keys():
-        set_labtest_row(); store_lab = pd.HDFStore(labtest_output_path,mode='r')
+        store_lab.close()
+        set_labtest_row(); 
+    else:
+        store_lab.close()
+    store_lab = pd.HDFStore(labtest_output_path,mode='r')
 
     col_list = get_timeseries_column()
     # create empty dataframe
@@ -87,7 +91,7 @@ def get_labtest_df(no):
         #     result_df.loc[lab_name].iloc[last_loc+1:]= result_df.loc[lab_name].iloc[last_loc]
 
     del target_df
-
+    store_lab.close()
     return result_df
 
 
