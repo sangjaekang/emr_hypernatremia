@@ -39,12 +39,12 @@ def generate_emr(no,emr_types={'demo','diag','lab','pres'}):
 
 
 
-def get_patient_timeseries_label(no):
+def get_patient_timeseries_label(no,label_name):
     global  PREP_OUTPUT_DIR,  SAMPLE_PATIENT_PATH
     # syntax checking existence for directory
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     output_path = PREP_OUTPUT_DIR + SAMPLE_PATIENT_PATH
-    x = pd.HDFStore(output_path).select('data/na_label')
+    x = pd.HDFStore(output_path,mode='r').select('data/{}'.format(label_name))
 
     result_series = pd.Series(index=get_timeseries_column())
     
@@ -71,12 +71,14 @@ def check_label(x):
         return np.nan
 
 
-def save_patient_input(no_range,time_length=12,gap_length=3,target_length=3,offset_detect_counts=50):
+def save_patient_input(no_range,label_name,input_dir=None,time_length=6,gap_length=1,target_length=3,offset_detect_counts=100):
     global INPUT_DIR, DEBUG_PRINT
+    if input_dir is None:
+        input_dir = INPUT_DIR
 
     for no in no_range:
         emr_df = generate_emr(no,{'lab'})
-        label_series = get_patient_timeseries_label(no)
+        label_series = get_patient_timeseries_label(no,label_name)
 
         colist = list(emr_df.columns)
 
@@ -88,7 +90,7 @@ def save_patient_input(no_range,time_length=12,gap_length=3,target_length=3,offs
                 
                 if np.isnan(label_value): continue
 
-                o_path = INPUT_DIR +'{}/'.format(label_value)
+                o_path = input_dir +'{}/'.format(label_value)
                 if not os.path.isdir(o_path):
                     os.makedirs(o_path)
                     
