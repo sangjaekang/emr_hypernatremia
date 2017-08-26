@@ -55,7 +55,7 @@ def _set_parser():
     parser.add_argument('chunk_size',help='working chunk size')
 
     parser.add_argument('time_length',help='time_length')
-    parser.add_argument('gap_period', help='gap_period')
+    parser.add_argument('gap_length', help='gap_length')
     parser.add_argument('target_length',help='target_length')
     parser.add_argument('offset_min_counts',help='offset_min_counts')
     parser.add_argument('offset_max_counts',help='offset_max_counts')
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     core_num = int(args.core_num)
     chunk_size = int(args.chunk_size)
     time_length = int(args.time_length) 
-    gap_period = int(args.gap_period)
+    gap_length = int(args.gap_length)
     target_length = int(args.target_length)
     offset_min_counts = int(args.offset_min_counts)
     offset_max_counts = int(args.offset_max_counts) 
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     def save_input(no_range):
         return save_patient_input(no_range,label_name=label_name,
                                             input_path=o_path, time_length=time_length,
-                                            gap_period=gap_period, target_length = target_length,
+                                            gap_length=gap_length, target_length = target_length,
                                             offset_min_counts=offset_min_counts,offset_max_counts=offset_max_counts)
 
     counter = core_num
