@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
     counter = core_num
 
-    for divider in range_divider(a,label_list,core_num,max_chunk_size):
+    for divider in range_divider(a,label_list,core_num,chunk_size):
         pool.apply_async(save_input,[divider])        
         counter=count-1
         if counter<=0: break
