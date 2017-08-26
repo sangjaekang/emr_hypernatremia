@@ -102,8 +102,9 @@ if __name__ == "__main__":
     counter = core_num
 
     for divider in range_divider(a,label_list,core_num,chunk_size):
-        pool.apply_async(save_input,[divider])        
-        counter=count-1
+        pool.apply_async(save_patient_input,[divider,label_name,o_path,time_length,
+                         gap_length,target_length,offset_min_counts,offset_max_counts])
+        counter=counter-1
         if counter<=0: break
 
     pool.close()
