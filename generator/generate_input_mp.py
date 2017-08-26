@@ -27,7 +27,7 @@ def range_divider(a,label_list,core_num,max_chunk_size):
             yield no_range
 
 
-def write_metadata_README(path, label_name,time_length,gap_length,target_length,offset_detect_counts):
+def write_metadata_README(path, label_name,time_length,gap_length,target_length,offset_min_counts,offset_max_counts):
     metadata_README = '''
 ### parameter Setting
 | parameter             | value |
@@ -36,9 +36,10 @@ def write_metadata_README(path, label_name,time_length,gap_length,target_length,
 | time_length           | {}    |
 | gap_length            | {}    |
 | target_length         | {}    |
-| offset_detects_counts | {}    |
+| offset_min_counts | {}    |
+| offset_max_counts | {}    |
 | Created date          | {}    |
-'''.format(label_name,time_length,gap_length,target_length,offset_detect_counts,time.ctime())
+'''.format(label_name,time_length,gap_length,target_length,offset_min_counts,offset_max_counts,time.ctime())
     
     file_path = path + 'README.md'    
     with open(file_path,'w') as f:
@@ -56,7 +57,8 @@ def _set_parser():
     parser.add_argument('time_length',help='time_length')
     parser.add_argument('gap_period', help='gap_period')
     parser.add_argument('target_length',help='target_length')
-    parser.add_argument('offset_detect_counts',help='target_length')
+    parser.add_argument('offset_min_counts',help='offset_min_counts')
+    parser.add_argument('offset_max_counts',help='offset_max_counts')
     args = parser.parse_args()
     return args
 
@@ -65,11 +67,16 @@ if __name__ == "__main__":
     global PREP_OUTPUT_DIR, SAMPLE_PATIENT_PATH
     #argument
     args = _set_parser()
-    label_name = args.label; label_list = list(range(1,int(args.label_range)))
-    core_num = int(args.core_num); chunk_size = int(args.chunk_size)
+    label_name = args.label 
+    label_list = list(range(1,int(args.label_range)))
+    core_num = int(args.core_num)
+    chunk_size = int(args.chunk_size)
+    time_length = int(args.time_length) 
+    gap_period = int(args.gap_period)
+    target_length = int(args.target_length)
+    offset_min_counts = int(args.offset_min_counts)
+    offset_max_counts = int(args.offset_max_counts) 
     
-    time_length = int(args.time_length); gap_period = int(args.gap_period)
-    target_length = int(args.target_length); offset_detect_counts = int(offset_detect_counts)
     o_path = check_directory(args.path)
 
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
@@ -90,7 +97,7 @@ if __name__ == "__main__":
         return save_patient_input(no_range,label_name=label_name,
                                             input_path=o_path, time_length=time_length,
                                             gap_period=gap_period, target_length = target_length,
-                                            offset_detect_counts=offset_detect_counts)
+                                            offset_min_counts=offset_min_counts,offset_max_counts=offset_max_counts)
 
     counter = core_num
 

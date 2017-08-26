@@ -38,7 +38,6 @@ def generate_emr(no,emr_types={'demo','diag','lab','pres'}):
     return emr_df
 
 
-
 def get_patient_timeseries_label(no,label_name):
     global  PREP_OUTPUT_DIR,  SAMPLE_PATIENT_PATH
     # syntax checking existence for directory
@@ -71,7 +70,7 @@ def check_label(x):
         return np.nan
 
 
-def save_patient_input(no_range,label_name,input_dir=None,time_length=6,gap_length=1,target_length=3,offset_detect_counts=100):
+def save_patient_input(no_range,label_name,input_dir=None,time_length=6,gap_length=1,target_length=3,offset_min_counts=50,offset_max_counts=100):
     global INPUT_DIR, DEBUG_PRINT
     if input_dir is None:
         input_dir = INPUT_DIR
@@ -84,7 +83,7 @@ def save_patient_input(no_range,label_name,input_dir=None,time_length=6,gap_leng
 
         for i in range(0,len(colist) - (time_length+gap_length+target_length)):
             window = emr_df.loc[:,colist[i]:colist[time_length-1+i]]
-            if window.count().sum() > offset_detect_counts:
+            if window.count().sum() >= offset_min_counts and window.count().sum() <= offset_max_counts:
                 target_stime = colist[time_length-1+gap_length+i]
                 label_value = check_label(label_series.loc[target_stime:target_stime+target_length-1])
                 
