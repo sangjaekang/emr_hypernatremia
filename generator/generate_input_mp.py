@@ -82,7 +82,7 @@ if __name__ == "__main__":
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     output_path = PREP_OUTPUT_DIR + SAMPLE_PATIENT_PATH
 
-    write_metadata_README(o_path, label_name,time_length,gap_length,target_length,offset_detect_counts)
+    write_metadata_README(o_path, label_name,time_length,gap_length,target_length,offset_min_counts,offset_max_counts)
 
     sample_store = pd.HDFStore(output_path,mode='r')
     a = sample_store.select('data/{}'.format(label_name))
