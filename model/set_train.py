@@ -34,9 +34,12 @@ def get_np(input_dir=None):
     global INPUT_DIR
     if input_dir is None:
         input_dir = INPUT_DIR
-
-    output_list = [i for in os.listdir(input_dir) if os.path.isdir(i)]
-    output_num = random.choice(output_list)
+    else :
+        input_dir = INPUT_DIR + input_dir
+        input_dir = check_directory(input_dir)
+    
+    output_list = [i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i)]
+    output_num = random.choice(input_dir + output_list)
     file_name = random.choice(os.listdir(input_dir+'{}'.format(output_num)))
     file_path = input_dir +"{}/".format(output_num) +file_name
     return int(output_num), get_np_array_emr(file_path)
@@ -45,13 +48,13 @@ def get_np(input_dir=None):
 ## make batch of train data set 
 def train_generator(dataset_size,input_dir=None,core_num=6,queue_count=1,queue=None):
     pool = Pool(processes=core_num)
+    global INPUT_DIR
     if input_dir is None:
         input_dir = INPUT_DIR
-    else : 
+    else :
         input_dir = INPUT_DIR + input_dir
-
-    check_directory(input_dir)
-
+        input_dir = check_directory(input_dir)
+    
     while queue_count >=1:
     # queue_count : the counts of loop for inserting batch into queue
         if DEBUG_PRINT:
@@ -63,7 +66,7 @@ def train_generator(dataset_size,input_dir=None,core_num=6,queue_count=1,queue=N
             a,b = result.get()
             label_list.append(a);stack_list.append(b)
 
-        output_nums = len([i for in os.listdir(input_dir) if os.path.isdir(i)])
+        output_nums =len([i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i)])
         batch_features = np.stack(stack_list,axis=0)
         batch_labels = np_utils.to_categorical(label_list,output_nums)
 

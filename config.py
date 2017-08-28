@@ -62,6 +62,7 @@ PER_LAB_DIR      = DATA_DIR + 'per_lab/'
 PER_PATIENT_DIR = DATA_DIR + 'patient/'
 IMPUTATION_DIR = DATA_DIR +'imputation/'
 INPUT_DIR = DATA_DIR +'input/'
+MODEL_SAVE_DIR = DATA_DIR + 'model_save/'
 
 ## convert mapping input data path
 KCD_PATH = DATA_DIR + 'KCD.xlsx'
