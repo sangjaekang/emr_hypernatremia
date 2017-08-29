@@ -99,8 +99,6 @@ def train_generator(dataset_size,input_dir=None,core_num=6):
 def save_acc_loss_graph(acc_list,val_acc_list,file_path):
     fig = plt.figure(1)
 
-    acc_list.extend(history.history['acc'])
-    val_acc_list.extend(history.history['val_acc'])
     plt.subplot(121)
     plt.plot(acc_list)
     plt.plot(val_acc_list)
@@ -109,8 +107,6 @@ def save_acc_loss_graph(acc_list,val_acc_list,file_path):
     plt.xlabel('epoch')
     plt.legend(['train','test'],loc='lower right')
 
-    loss_list.extend(history.history['loss'])
-    val_loss_list.extend(history.history['loss'])
     plt.subplot(122)
     plt.plot(loss_list)
     plt.plot(val_loss_list)
@@ -170,7 +166,7 @@ def fit_train_ml(model,data_shape,
 
     global MODEL_SAVE_DIR,DEBUG_PRINT
     file_path = MODEL_SAVE_DIR + o_path
-    check_directory(file_path)
+    file_path= check_directory(file_path)
     file_name = file_path+'weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5'
     
     # save the model_parameter
@@ -230,3 +226,5 @@ def fit_train_ml(model,data_shape,
 
     #save the accuracy and loss graph
     save_acc_loss_graph(acc_list,val_acc_list,file_path)
+    # save the model
+    plot_model(model,to_file=file_path+'model.png',show_shapes=True)
