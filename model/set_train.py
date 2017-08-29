@@ -24,7 +24,7 @@ from keras.callbacks import ModelCheckpoint
 
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
-
+import matplotlib.pyplot as plt
 
 #QUEUE FLAG
 FLAG_ALL_DONE = b'work_finished'
@@ -48,6 +48,7 @@ def train_generator_ml(dataset_size,n_calculation,
         if turn_flag is 1 : 
             with arr_ft_1.get_lock():
                 with arr_la_1.get_lock():
+                    start_time = time.time()
                     print("train get arr_ft_1 lock")
                     x_train, y_train = train_generator(dataset_size,input_dir=input_dir)
                     nparr_ft_1 = np.frombuffer(arr_ft_1.get_obj())
@@ -55,10 +56,11 @@ def train_generator_ml(dataset_size,n_calculation,
                     nparr_la_1 = np.frombuffer(arr_la_1.get_obj())
                     nparr_la_1[:] = y_train.flatten()
                     turn_flag = 2
-                    print("train unlock arr_ft_1")
+                    print("train unlock arr_ft_1 --- time consumed : {}".format(time.time()-start_time))
         else :
             with arr_ft_2.get_lock():
                 with arr_la_2.get_lock():
+                    start_time = time.time()
                     print("train get arr_ft_2 lock")
                     x_train, y_train = train_generator(dataset_size,input_dir=input_dir)
                     nparr_ft_2 = np.frombuffer(arr_ft_2.get_obj())
@@ -66,7 +68,7 @@ def train_generator_ml(dataset_size,n_calculation,
                     nparr_la_2 = np.frombuffer(arr_la_2.get_obj())
                     nparr_la_2[:] = y_train.flatten()
                     turn_flag = 1
-                    print("train unlock arr_ft_2")
+                    print("train unlock arr_ft_2 --- time consumed : {}".format(time.time()-start_time))
 
         time.sleep(1)
         n_calculation = n_calculation -1
@@ -83,12 +85,15 @@ def train_generator(dataset_size,input_dir=None,core_num=6):
         input_dir = check_directory(input_dir)
     
     results = [pool.apply_async(get_np,(input_dir,)) for _ in range(dataset_size)]
+    
     label_list = list(); stack_list = list()
 
     for result in results:
         a,b = result.get()
-        label_list.append(a);stack_list.append(b)
+        label_list.append(a)
+        stack_list.append(b)
 
+    pool.close()
     output_nums =len([i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i)])
     batch_features = np.stack(stack_list,axis=0)
     batch_labels = np_utils.to_categorical(label_list,output_nums)
@@ -118,6 +123,7 @@ def save_acc_loss_graph(acc_list,val_acc_list,file_path):
     fig.set_size_inches(12., 6.0)
 
     fig.savefig(file_path+'acc_and_loss graph.png',dpi=100)
+    del fig
 
 
 def fit_train(model,dataset_size,o_path,validation_split=0.33,batch_size=256,epochs=200):
@@ -154,7 +160,8 @@ def fit_train(model,dataset_size,o_path,validation_split=0.33,batch_size=256,epo
 
     #save the accuracy and loss graph
     save_acc_loss_graph(acc_list,val_acc_list,file_path)
-
+    # save the model
+    plot_model(model,to_file=file_path+'model.png',show_shapes=True)
 
 def fit_train_ml(model,data_shape,
                  arr_ft_1,arr_la_1,arr_ft_2,arr_la_2,
