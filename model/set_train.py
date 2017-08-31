@@ -31,17 +31,66 @@ FLAG_ALL_DONE = b'work_finished'
 FLAG_WORKER_FINISHED_PROCESSING = b'worker_finished_processing'
 
 
-def get_np(input_dir=None):
-    output_list = [i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i)]
+def get_testset(input_dir=None,testset_size=1200):
+    # 데이터셋에서　testset을　일부　분리시키는　작업
+    testset_dir = input_dir + '/testset/'
+    
+    if os.path.isdir(testset_dir): # check the existence of testset
+        return
+
+    print("Setting testset...directory : {}/testset".format(_dir))
+    output_list = [i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i) and re_num.match(i)]
+    num_cases = len(output_list)
+    for i in output_list:
+        if not os.path.isdir(testset_dir + str(i) + '/'):
+            os.makedirs(testset_dir+str(i)+'/')
+        for _ in range(np.int(testset_size/num_cases)):
+            file_name = random.choice(os.listdir(input_dir+str(i)))
+            src_path = input_dir +'{}/{}'.format(i,file_name)
+            dst_path = testset_dir + '{}/{}'.format(i,file_name)
+            os.rename(src_path,dst_path)
+
+
+def eval_trainset(model, model_path, testset_path):
+    re_hdf = re.compile(".*\.hdf5$")
+    acc_df = pd.DataFrame(columns=['filename','acc'])
+    for file_name in os.listdir(model_path):
+        if re_hdf.match(file_name):
+            acc_df = acc_df.append({'acc':file_name.split('-')[0],'filename':file_name},
+                       ignore_index=True)
+    best_acc_file = acc_df.sort_values(['acc'],ascending=False).iloc[0].filename
+    
+    model.load(model_path+'/'+best_acc_file)
+
+    X,Y = train_generator(600, testset_path,shuffling=False)
+    Y_pred = model.predict(X)
+    score = model.evaluate(X,Y, verbose=0)
+    print("Evaluate testset!")
+    print("--------------------------------------------------------------")
+    print("%s: %.4f%%" % (model.metrics_names[1], score[1]*100))
+    print("roc_auc_score : {}".format(roc_auc_score(Y,Y_pred)))
+    print("--------------------------------------------------------------")
+
+
+def get_np(input_dir=None,shuffling=True):
+    re_num = re.compile("^\d+$")
+    output_list = [i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i) and re_num.match(i)]
     output_num = random.choice(output_list)
     file_name = random.choice(os.listdir(input_dir+'{}'.format(output_num)))
     file_path = input_dir +"{}/".format(output_num) +file_name
-    return int(output_num), get_np_array_emr(file_path)
+    return int(output_num), get_np_array_emr(file_path,shuffling=True)
 
 
 def train_generator_ml(dataset_size,n_calculation,
                                      arr_ft_1,arr_la_1,arr_ft_2,arr_la_2,
                                      input_dir=None):    
+    global INPUT_DIR
+    _dir = INPUT_DIR + input_dir
+    if os.path.isdir(_dir):
+        get_testset(_dir,1200)
+    else : 
+        raise ValueError("wrong Input directory!")
+
     turn_flag = 1
     while n_calculation>0:
     
@@ -74,7 +123,7 @@ def train_generator_ml(dataset_size,n_calculation,
         n_calculation = n_calculation -1
 
 ## make batch of train data set 
-def train_generator(dataset_size,input_dir=None,core_num=6):
+def train_generator(dataset_size,input_dir=None,core_num=6,shuffling=True):
     global INPUT_DIR
     pool = Pool(processes=core_num)
 
@@ -84,7 +133,9 @@ def train_generator(dataset_size,input_dir=None,core_num=6):
         input_dir = INPUT_DIR + input_dir
         input_dir = check_directory(input_dir)
     
-    results = [pool.apply_async(get_np,(input_dir,)) for _ in range(dataset_size)]
+    get_testset(input_dir,1200)
+
+    results = [pool.apply_async(get_np,(input_dir,shuffling,)) for _ in range(dataset_size)]
     
     label_list = list(); stack_list = list()
 
@@ -100,7 +151,7 @@ def train_generator(dataset_size,input_dir=None,core_num=6):
 
     return batch_features, batch_labels
 
-        
+
 def save_acc_loss_graph(acc_list,val_acc_list,loss_list,val_loss_list,file_path):
     fig = plt.figure(1)
 
@@ -127,7 +178,7 @@ def save_acc_loss_graph(acc_list,val_acc_list,loss_list,val_loss_list,file_path)
     del fig
 
 
-def fit_train(model,dataset_size,o_path,validation_split=0.33,batch_size=256,epochs=200):
+def fit_train(model,dataset_size,o_path,input_dir=None,validation_split=0.33,batch_size=256,epochs=200):
     global MODEL_SAVE_DIR,DEBUG_PRINT
     file_path = MODEL_SAVE_DIR + o_path
     check_directory(file_path)
@@ -143,7 +194,7 @@ def fit_train(model,dataset_size,o_path,validation_split=0.33,batch_size=256,epo
     start_time = time.time()
     if DEBUG_PRINT:
         print("start!")
-    x_train,y_train = train_generator(dataset_size)
+    x_train,y_train = train_generator(dataset_size,input_dir)
     if DEBUG_PRINT:
         print("time consumed -- {}".format(time.time()-start_time))
     start_time = time.time()
@@ -173,9 +224,9 @@ def fit_train_ml(model,data_shape,
     turn_flag = 1
 
     global MODEL_SAVE_DIR,DEBUG_PRINT
-    file_path = MODEL_SAVE_DIR + o_path
-    file_path= check_directory(file_path)
-    file_name = file_path+'{val_acc:.2f}-weights-improvement-{epoch:02d}.hdf5'
+    model_path = MODEL_SAVE_DIR + o_path
+    model_path= check_directory(model_path)
+    file_name = model_path+'{val_acc:.4f}-weights-improvement-{epoch:03d}.hdf5'
     
     # save the model_parameter
     checkpoint = ModelCheckpoint(file_name, monitor='val_acc', verbose=0, save_best_only=True, mode='max')
@@ -233,6 +284,6 @@ def fit_train_ml(model,data_shape,
         n_calculation = n_calculation-1
 
     #save the accuracy and loss graph
-    save_acc_loss_graph(acc_list,val_acc_list,file_path)
+    save_acc_loss_graph(acc_list,val_acc_list,model_path)
     # save the model
-    plot_model(model,to_file=file_path+'model.png',show_shapes=True)
+    plot_model(model,to_file=model_path+'model.png',show_shapes=True)
