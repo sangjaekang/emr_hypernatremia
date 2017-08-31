@@ -38,7 +38,7 @@ def get_testset(input_dir=None,testset_size=1200):
     if os.path.isdir(testset_dir): # check the existence of testset
         return
 
-    print("Setting testset...directory : {}/testset".format(_dir))
+    print("Setting testset...directory : {}".format(testset_dir))
     output_list = [i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i) and re_num.match(i)]
     num_cases = len(output_list)
     for i in output_list:
@@ -56,13 +56,13 @@ def eval_trainset(model, model_path, testset_path):
     acc_df = pd.DataFrame(columns=['filename','acc'])
     for file_name in os.listdir(model_path):
         if re_hdf.match(file_name):
-            acc_df = acc_df.append({'acc':file_name.split('-')[0],'filename':file_name},
+            acc_df = acc_df.append({'acc':file_name.split('-')[-1].replace(".hdf5",""),'filename':file_name},
                        ignore_index=True)
     best_acc_file = acc_df.sort_values(['acc'],ascending=False).iloc[0].filename
     
-    model.load(model_path+'/'+best_acc_file)
+    model.load_weights(model_path+'/'+best_acc_file)
 
-    X,Y = train_generator(600, testset_path,shuffling=False)
+    X,Y = train_generator(600, testset_path,shuffling=False,test=True)
     Y_pred = model.predict(X)
     score = model.evaluate(X,Y, verbose=0)
     print("Evaluate testset!")
@@ -123,7 +123,7 @@ def train_generator_ml(dataset_size,n_calculation,
         n_calculation = n_calculation -1
 
 ## make batch of train data set 
-def train_generator(dataset_size,input_dir=None,core_num=6,shuffling=True):
+def train_generator(dataset_size,input_dir=None,core_num=6,shuffling=True,test=False):
     global INPUT_DIR
     pool = Pool(processes=core_num)
 
@@ -133,7 +133,8 @@ def train_generator(dataset_size,input_dir=None,core_num=6,shuffling=True):
         input_dir = INPUT_DIR + input_dir
         input_dir = check_directory(input_dir)
     
-    get_testset(input_dir,1200)
+    if not test:
+        get_testset(input_dir,1200)
 
     results = [pool.apply_async(get_np,(input_dir,shuffling,)) for _ in range(dataset_size)]
     
@@ -182,7 +183,7 @@ def fit_train(model,dataset_size,o_path,input_dir=None,validation_split=0.33,bat
     global MODEL_SAVE_DIR,DEBUG_PRINT
     file_path = MODEL_SAVE_DIR + o_path
     check_directory(file_path)
-    file_name = file_path+'{val_acc:.2f}-weights-improvement-{epoch:02d}.hdf5'
+    file_name = file_path+'weights-improvement-{epoch:03d}-{val_acc:.3f}.hdf5'
     
     # save the model_parameter
     checkpoint = ModelCheckpoint(file_name, monitor='val_acc', verbose=0, save_best_only=True, mode='max')
@@ -226,7 +227,7 @@ def fit_train_ml(model,data_shape,
     global MODEL_SAVE_DIR,DEBUG_PRINT
     model_path = MODEL_SAVE_DIR + o_path
     model_path= check_directory(model_path)
-    file_name = model_path+'{val_acc:.4f}-weights-improvement-{epoch:03d}.hdf5'
+    file_name = model_path+'weights-improvement-{epoch:03d}-{val_acc:.3f}.hdf5'
     
     # save the model_parameter
     checkpoint = ModelCheckpoint(file_name, monitor='val_acc', verbose=0, save_best_only=True, mode='max')
