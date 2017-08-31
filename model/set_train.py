@@ -101,7 +101,7 @@ def train_generator(dataset_size,input_dir=None,core_num=6):
     return batch_features, batch_labels
 
         
-def save_acc_loss_graph(acc_list,val_acc_list,file_path):
+def save_acc_loss_graph(acc_list,val_acc_list,loss_list,val_loss_list,file_path):
     fig = plt.figure(1)
 
     plt.subplot(121)
@@ -123,6 +123,7 @@ def save_acc_loss_graph(acc_list,val_acc_list,file_path):
     fig.set_size_inches(12., 6.0)
 
     fig.savefig(file_path+'acc_and_loss graph.png',dpi=100)
+    plt.show()
     del fig
 
 
@@ -130,7 +131,7 @@ def fit_train(model,dataset_size,o_path,validation_split=0.33,batch_size=256,epo
     global MODEL_SAVE_DIR,DEBUG_PRINT
     file_path = MODEL_SAVE_DIR + o_path
     check_directory(file_path)
-    file_name = file_path+'weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5'
+    file_name = file_path+'{val_acc:.2f}-weights-improvement-{epoch:02d}.hdf5'
     
     # save the model_parameter
     checkpoint = ModelCheckpoint(file_name, monitor='val_acc', verbose=0, save_best_only=True, mode='max')
@@ -159,7 +160,7 @@ def fit_train(model,dataset_size,o_path,validation_split=0.33,batch_size=256,epo
     val_loss_list.extend(history.history['loss'])
 
     #save the accuracy and loss graph
-    save_acc_loss_graph(acc_list,val_acc_list,file_path)
+    save_acc_loss_graph(acc_list,val_acc_list,loss_list,val_loss_list,file_path)
     # save the model
     plot_model(model,to_file=file_path+'model.png',show_shapes=True)
 
@@ -174,7 +175,7 @@ def fit_train_ml(model,data_shape,
     global MODEL_SAVE_DIR,DEBUG_PRINT
     file_path = MODEL_SAVE_DIR + o_path
     file_path= check_directory(file_path)
-    file_name = file_path+'weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5'
+    file_name = file_path+'{val_acc:.2f}-weights-improvement-{epoch:02d}.hdf5'
     
     # save the model_parameter
     checkpoint = ModelCheckpoint(file_name, monitor='val_acc', verbose=0, save_best_only=True, mode='max')
