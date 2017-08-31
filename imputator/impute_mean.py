@@ -193,8 +193,7 @@ def get_np_array_emr(input_path,shuffling=True):
         shuffling=False
 
     np_array = np.load(input_path)
-    np_array = np_array.astype(float)
-    
+    np_array = np_array.astype(float)    
     # share the value between emergency code and not
     np_array = pd.DataFrame(index=LAB_INDEX,data=np_array)
 
@@ -211,8 +210,8 @@ def get_np_array_emr(input_path,shuffling=True):
         r_time = np_array.shape[1]
         for x,y in np.argwhere(~np.isnan(np_array)):
             m_y = y+_suffle_time(1)
-            while (m_y<0)|(m_y>=r_time):m_y = y+_suffle_time(1)
-            result_array[x,m_y] = np_array[x,y]
+            while (m_y<0)|(m_y>=r_time): m_y = y+_suffle_time(1)
+            result_array[x,m_y] = np_array[x,y] + np.random.normal(0,0.01) # add gaussian noise
     else:
         result_array = np.array(np_array,copy=True)
 
