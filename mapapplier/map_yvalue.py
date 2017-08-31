@@ -46,6 +46,40 @@ def get_na_label_df():
     total_df.to_hdf(output_path,"data/na_label",format='table',data_columns=True,mode='a')
 
 
+def get_ka_label_df():
+    global PER_LAB_DIR, PREP_OUTPUT_DIR, PATIENT_COUNT, USE_LAB_COL_NAME, SAMPLE_PATIENT_PATH, DEBUG_PRINT
+    # syntax checking existence for directory
+    PER_LAB_DIR = check_directory(PER_LAB_DIR)
+    PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
+    output_path = PREP_OUTPUT_DIR + SAMPLE_PATIENT_PATH
+
+    result_df = pd.DataFrame(index=range(1,PATIENT_COUNT))
+    ka_df = pd.read_csv(PER_LAB_DIR+'labtest_L3042.csv')
+    ka_e_df = pd.read_csv(PER_LAB_DIR+'labtest_L8042.csv')
+
+    ka_df.date = ka_df.date.map(convert_month)
+    ka_e_df.date = ka_e_df.date.map(convert_month)
+
+    ka_df.result = ka_df.result.map(convert_to_numeric)
+    ka_e_df.result = ka_e_df.result.map(convert_to_numeric)
+
+    ka_df.loc[ka_df.result<3.5,'result'] = 1
+    ka_df.loc[(ka_df.result>=3.5)&(ka_df.result<=5.5),'result'] = 0
+    ka_df.loc[ka_df.result>5.5,'result'] = 2
+
+    ka_e_df.loc[ka_e_df.result<3.5,'result'] = 1
+    ka_e_df.loc[(ka_e_df.result>=3.5)&(ka_e_df.result<=5.5),'result'] = 0
+    ka_e_df.loc[ka_e_df.result>5.5,'result'] = 2
+
+    total_df = pd.concat([ka_df,ka_e_df])
+    total_df = total_df.groupby(['no','date','result']).size().unstack(fill_value=0)
+    total_df = (2*(total_df[2.0]>0))+(1*(total_df[1.0]>0))
+    total_df = total_df.reset_index()
+    total_df.columns = ['no','date','label']
+
+    total_df.to_hdf(output_path,"data/ka_label",format='table',data_columns=True,mode='a')
+
+
 def run():
     global PER_LAB_DIR, PREP_OUTPUT_DIR, PATIENT_COUNT, USE_LAB_COL_NAME, SAMPLE_PATIENT_PATH, DEBUG_PRINT
 

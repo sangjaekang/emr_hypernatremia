@@ -1,9 +1,10 @@
 #!/bin/sh
 
 #　데이터　셋을　만드는　함수
-set_1=true
+set_1=false
 set_2=false
-set_3=true
+set_3=false
+set_4=true
 
 ## OFFSET COUNTS 변화에　따른　데이터　셋
 
@@ -96,4 +97,29 @@ now=$(date + "%T")
 echo "Current time : $now"
 
 echo "time length end!" >> ./process.txt
+fi
+
+if $set_4 ; then
+
+now=$(date + "%T")
+echo "Current time : $now"
+
+echo "start Ka label!" >> ./process.txt
+rm -rf ../data/input/dataset_11
+python generate_input_mp.py ../data/input/dataset_11 ka_label 4 7 4000 6 1 3 100 2000
+
+echo "start Ka label!" >> ./process.txt
+rm -rf ../data/input/dataset_12
+python generate_input_mp.py ../data/input/dataset_12 ka_label 4 7 4000 12 1 3 100 2000
+
+
+echo "start Ka label!" >> ./process.txt
+rm -rf ../data/input/dataset_13
+python generate_input_mp.py ../data/input/dataset_13 ka_label 4 7 4000 18 1 3 100 2000
+
+
+now=$(date + "%T")
+echo "Current time : $now"
+
+
 fi
