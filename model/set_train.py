@@ -54,6 +54,9 @@ def get_testset(input_dir=None,testset_size=1200):
 def eval_trainset(model, model_path, testset_path):
     re_hdf = re.compile(".*\.hdf5$")
     acc_df = pd.DataFrame(columns=['filename','acc'])
+    model_path = MODEL_SAVE_DIR+model_path
+    model_path = check_directory(model_path)
+    
     for file_name in os.listdir(model_path):
         if re_hdf.match(file_name):
             acc_df = acc_df.append({'acc':file_name.split('-')[-1].replace(".hdf5",""),'filename':file_name},
