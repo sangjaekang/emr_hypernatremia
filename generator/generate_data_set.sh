@@ -110,12 +110,12 @@ python generate_input_mp.py ../data/input/dataset_11 ka_label 4 7 4000 6 1 3 100
 
 echo "start Ka label!" >> ./process.txt
 rm -rf ../data/input/dataset_12
-python generate_input_mp.py ../data/input/dataset_12 ka_label 4 7 4000 12 1 3 100 2000
+python generate_input_mp.py ../data/input/dataset_12 ka_label 4 7 4000 6 1 3 50 100
 
 
 echo "start Ka label!" >> ./process.txt
 rm -rf ../data/input/dataset_13
-python generate_input_mp.py ../data/input/dataset_13 ka_label 4 7 4000 18 1 3 100 2000
+python generate_input_mp.py ../data/input/dataset_13 ka_label 4 7 4000 6 1 3 20 50
 
 
 now=$(date + "%T")
