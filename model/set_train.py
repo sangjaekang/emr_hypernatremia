@@ -2,6 +2,7 @@
 import sys, os, re
 import time
 import random
+import argparse
 
 os_path = os.path.abspath('./') ; find_path = re.compile('emr_hypernatremia')
 BASE_PATH = os_path[:find_path.search(os_path).span()[1]]
@@ -13,8 +14,10 @@ from generator.generate_patient_emr import generate_emr
 from imputator.impute_mean import get_np_array_emr
 
 import multiprocessing
-from multiprocessing import Pool,Queue,Lock,Array
+from multiprocessing import Pool,Queue,Lock,Array,Process
 import ctypes
+
+from model import prediction_model
 
 # import module related to keras
 import keras
@@ -24,6 +27,9 @@ from keras.callbacks import ModelCheckpoint
 
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 
 #QUEUE FLAG
@@ -37,7 +43,7 @@ def get_testset(input_dir=None,testset_size=1200):
     
     if os.path.isdir(testset_dir): # check the existence of testset
         return
-
+    re_num = re.compile("^\d+$")
     print("Setting testset...directory : {}".format(testset_dir))
     output_list = [i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i) and re_num.match(i)]
     num_cases = len(output_list)
@@ -149,7 +155,9 @@ def train_generator(dataset_size,input_dir=None,core_num=6,shuffling=True,test=F
         stack_list.append(b)
 
     pool.close()
-    output_nums =len([i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i)])
+    pool.join()
+    re_num = re.compile("^\d+$")
+    output_nums =len([i for i in os.listdir(input_dir) if os.path.isdir(input_dir+i) and re_num.match(i) ])
     batch_features = np.stack(stack_list,axis=0)
     batch_labels = np_utils.to_categorical(label_list,output_nums)
 
@@ -178,7 +186,7 @@ def save_acc_loss_graph(acc_list,val_acc_list,loss_list,val_loss_list,file_path)
     fig.set_size_inches(12., 6.0)
 
     fig.savefig(file_path+'acc_and_loss graph.png',dpi=100)
-    plt.show()
+    #plt.show()
     del fig
 
 
@@ -221,7 +229,7 @@ def fit_train(model,dataset_size,o_path,input_dir=None,validation_split=0.33,bat
 
 def fit_train_ml(model,data_shape,
                  arr_ft_1,arr_la_1,arr_ft_2,arr_la_2,
-                 n_calculation, o_path, validation_split=0.33,batch_size=256,epochs=200):
+                 n_calculation, o_path, validation_split=0.5,batch_size=256,epochs=200):
 
     dataset_size,n_rows,n_cols,n_depths,n_labels = data_shape
 
@@ -245,7 +253,7 @@ def fit_train_ml(model,data_shape,
                 with arr_la_1.get_lock():
                     start_time = time.time()
                     if DEBUG_PRINT: print("fit_train_ml start!")
-                    
+                    sys.stdout.flush() 
                     nparr_ft_1 = np.frombuffer(arr_ft_1.get_obj())
                     nparr_ft_1 = np.reshape(nparr_ft_1,(dataset_size,n_rows,n_cols,n_depths)) 
                     nparr_la_1 = np.frombuffer(arr_la_1.get_obj())
@@ -256,7 +264,7 @@ def fit_train_ml(model,data_shape,
                                         epochs=epochs,callbacks=callbacks_list,verbose=0)
                     
                     if DEBUG_PRINT: print("fit_train_ml end -- {}".format(time.time()-start_time))
-
+                    sys.stdout.flush()
                     acc_list.extend(history.history['acc'])
                     val_acc_list.extend(history.history['val_acc'])
                     loss_list.extend(history.history['loss'])
@@ -267,7 +275,7 @@ def fit_train_ml(model,data_shape,
                 with arr_la_2.get_lock():
                     start_time = time.time()
                     if DEBUG_PRINT: print("fit_train_ml start!")
-                    
+                    sys.stdout.flush()
                     nparr_ft_2 = np.frombuffer(arr_ft_2.get_obj())
                     nparr_ft_2 = np.reshape(nparr_ft_2,(dataset_size,n_rows,n_cols,n_depths)) 
                     nparr_la_2 = np.frombuffer(arr_la_2.get_obj())
@@ -278,7 +286,7 @@ def fit_train_ml(model,data_shape,
                                         epochs=epochs,callbacks=callbacks_list,verbose=0)
                     
                     if DEBUG_PRINT: print("fit_train_ml end -- {}".format(time.time()-start_time))
-
+                    sys.stdout.flush()
                     acc_list.extend(history.history['acc'])
                     val_acc_list.extend(history.history['val_acc'])
                     loss_list.extend(history.history['loss'])
@@ -288,6 +296,72 @@ def fit_train_ml(model,data_shape,
         n_calculation = n_calculation-1
 
     #save the accuracy and loss graph
-    save_acc_loss_graph(acc_list,val_acc_list,model_path)
+    save_acc_loss_graph(acc_list,val_acc_list,loss_list,val_loss_list,model_path)
     # save the model
     plot_model(model,to_file=model_path+'model.png',show_shapes=True)
+
+def do_work_ml(target_num):
+    ## setting in this function
+    dataset_size = 30000
+    batch_size = 256
+    epochs = 50
+    n_rows = 53
+    n_cols = 6
+    n_depths = 2
+    n_labels = 4
+    n_calculation = 15
+    data_shape = (dataset_size,n_rows,n_cols,n_depths,n_labels)
+
+    #initializing model!
+    model = prediction_model.prediction_first_model(emr_rows=n_rows,
+                                        emr_cols=n_cols,
+                                        emr_depths=n_depths,
+                                        num_classes=n_labels)
+    
+    #initializing shared array
+    arr_ft_1 = Array(ctypes.c_double,dataset_size*n_rows*n_cols*n_depths)
+    arr_la_1 = Array(ctypes.c_double,dataset_size*n_labels)
+    arr_ft_2 = Array(ctypes.c_double,dataset_size*n_rows*n_cols*n_depths)
+    arr_la_2 = Array(ctypes.c_double,dataset_size*n_labels)
+
+    
+    p_t = Process(target=train_generator_ml,
+            kwargs={
+            'dataset_size':dataset_size,
+            'n_calculation' :n_calculation,
+            'arr_ft_1' : arr_ft_1,
+            'arr_la_1' : arr_la_1,
+            'arr_ft_2' : arr_ft_2,
+            'arr_la_2' : arr_la_2,
+            'input_dir' : 'dataset_{}'.format(target_num)
+            })
+
+    p_f = Process(target=fit_train_ml,
+                 kwargs={
+                 'model': model, 
+                 'data_shape': data_shape,
+                 'arr_ft_1' : arr_ft_1,
+                 'arr_la_1' : arr_la_1,
+                 'arr_ft_2' : arr_ft_2,
+                 'arr_la_2' : arr_la_2,
+                 'n_calculation':n_calculation,
+                 'epochs' : epochs,
+                 'o_path' : 'train_{}'.format(target_num)
+                 })
+
+    p_t.start();p_f.start()
+    p_t.join();p_f.join()
+    eval_trainset(model,'/train_{}/'.format(target_num),'/dataset_{}/testset/'.format(target_num))
+
+
+def _set_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('t', help="target_num")
+    args = parser.parse_args()
+
+    return args
+
+
+if __name__=='__main__':
+    args = _set_parser()
+    do_work_ml(args.t)
