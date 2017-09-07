@@ -79,35 +79,62 @@ if __name__ == "__main__":
     
     o_path = check_directory(args.path)
 
+    train_path = o_path + 'train/'; train_path = check_directory(train_path)
+    test_path = o_path + 'test/'; test_path = check_directory(test_path)
+    validation_path = o_path + 'validation/'; validation_path = check_directory(validation_path)
+
     PREP_OUTPUT_DIR = check_directory(PREP_OUTPUT_DIR)
     output_path = PREP_OUTPUT_DIR + SAMPLE_PATIENT_PATH
 
     write_metadata_README(o_path, label_name,time_length,gap_length,target_length,offset_min_counts,offset_max_counts)
 
     sample_store = pd.HDFStore(output_path,mode='r')
-    a = sample_store.select('data/{}'.format(label_name))
+    train_set = sample_store.select('data/{}/train'.format(label_name))
+    validation_set = sample_store.select('data/{}/validation'.format(label_name))
+    test_set = sample_store.select('data/{}/test'.format(label_name))
     sample_store.close()
-    
+
+    ## train set generating
     print("Creating pool with 7 workers")
     pool = multiprocessing.Pool(processes=core_num)
     print(pool._pool)
-    print("Invoking apply(save_patient_input, no_range)")
-
-    def save_input(no_range):
-        return save_patient_input(no_range,label_name=label_name,
-                                            input_path=o_path, time_length=time_length,
-                                            gap_length=gap_length, target_length = target_length,
-                                            offset_min_counts=offset_min_counts,offset_max_counts=offset_max_counts)
-
+    print("Invoking apply train_set")
     counter = core_num
-
-    for divider in range_divider(a,label_list,core_num,chunk_size):
-        pool.apply_async(save_patient_input,[divider,label_name,o_path,time_length,
+    for divider in range_divider(train_set,label_list,core_num,chunk_size):
+        pool.apply_async(save_patient_input,[divider,label_name,train_path,time_length,
                          gap_length,target_length,offset_min_counts,offset_max_counts])
         counter=counter-1
         if counter<=0: break
-
     pool.close()
-    pool.join()
-    
-    print("Finished")
+    pool.join()    
+    print("trainset Finished")
+
+    ## test set generating
+    print("Creating pool with 7 workers")
+    pool = multiprocessing.Pool(processes=core_num)
+    print(pool._pool)
+    print("Invoking apply test_set")
+    counter = core_num
+    for divider in range_divider(test_set,label_list,core_num,chunk_size):
+        pool.apply_async(save_patient_input,[divider,label_name,test_path,time_length,
+                         gap_length,target_length,offset_min_counts,offset_max_counts])
+        counter=counter-1
+        if counter<=0: break
+    pool.close()
+    pool.join()    
+    print("test_set Finished")
+
+    ## train set generating
+    print("Creating pool with 7 workers")
+    pool = multiprocessing.Pool(processes=core_num)
+    print(pool._pool)
+    print("Invoking apply validation_set")
+    counter = core_num
+    for divider in range_divider(validation_set,label_list,core_num,chunk_size):
+        pool.apply_async(save_patient_input,[divider,label_name,validation_path,time_length,
+                         gap_length,target_length,offset_min_counts,offset_max_counts])
+        counter=counter-1
+        if counter<=0: break
+    pool.close()
+    pool.join()    
+    print("validation_set Finished")
